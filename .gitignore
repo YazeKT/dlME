@@ -1,0 +1,51 @@
+# Dependencies and build output
+node_modules/
+node_modules.broken-*/
+out/
+release/
+coverage/
+
+# Local validation and recovery material
+verification/
+backups/
+context/
+plugin-source/
+yt-dlp-master/
+
+# Downloaded runtime binaries and temporary archives
+resources/engine/*.exe
+resources/engine/*.zip
+resources/engine/*.tmp
+
+# Generated license inventories (created by npm run licenses)
+resources/licenses/APPLICATION-DEPENDENCIES.txt
+resources/licenses/Electron-Chromium-LICENSES.html
+resources/licenses/Electron-LICENSE.txt
+resources/licenses/RUNTIME-BUILD-DETAILS.txt
+
+# Local application data
+dlME-data/
+diME-data/
+*.sqlite
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+
+# Logs, caches, and editor files
+*.log
+*.tmp
+.cache/
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local design and QA exports
+/Gemini_Generated_Image_*.png
+/design-qa-comparison-*.png
+/implementation-*.png
+/design-qa.md
+/index.html
+
+# Corresponding-source work products are GitHub release assets
+release-source/

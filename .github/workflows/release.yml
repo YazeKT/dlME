@@ -1,0 +1,37 @@
+name: Build Windows release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run fetch:runtimes
+      - run: npm run package:win
+      - run: npm run release:check
+      - name: Generate checksums
+        shell: pwsh
+        run: |
+          Get-ChildItem release/0.9.0 -File | Where-Object Extension -in '.exe','.blockmap' | ForEach-Object {
+            $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLowerInvariant()
+            "$hash *$($_.Name)"
+          } | Set-Content -Encoding ascii release/0.9.0/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dlME-0.9.0-windows-unsigned
+          path: |
+            release/0.9.0/*.exe
+            release/0.9.0/*.blockmap
+            release/0.9.0/SHA256SUMS.txt
+          if-no-files-found: error

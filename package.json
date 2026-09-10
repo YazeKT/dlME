@@ -1,0 +1,122 @@
+{
+  "name": "dlme",
+  "version": "0.9.0",
+  "description": "dlME - Windows media downloader",
+  "main": "out/main/index.js",
+  "author": "Yaze Media",
+  "license": "MIT",
+  "private": true,
+  "homepage": "https://github.com/YazeKT/dlME#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YazeKT/dlME.git"
+  },
+  "bugs": {
+    "url": "https://github.com/YazeKT/dlME/issues"
+  },
+  "scripts": {
+    "dev": "electron-vite dev",
+    "start": "electron-vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "npm run typecheck && npm run test && electron-vite build",
+    "fetch:runtimes": "node scripts/fetch-runtimes.mjs",
+    "icons": "node scripts/generate-icons.mjs",
+    "package:dir": "npm run licenses && npm run build && electron-builder --dir",
+    "package:win": "npm run licenses && npm run build && electron-builder --win nsis portable",
+    "verify": "npm run build",
+    "licenses": "node scripts/generate-notices.mjs",
+    "release:check": "node scripts/release-check.mjs",
+    "release:source": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-corresponding-source.ps1"
+  },
+  "dependencies": {
+    "@phosphor-icons/react": "2.1.10",
+    "better-sqlite3": "13.0.3",
+    "openpgp": "6.3.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "7.6.13",
+    "@types/node": "24.10.1",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "@vitejs/plugin-react": "5.2.0",
+    "electron": "44.1.0",
+    "electron-builder": "26.15.3",
+    "electron-vite": "5.0.0",
+    "png-to-ico": "3.0.2",
+    "sharp": "0.35.4",
+    "typescript": "7.0.2",
+    "vite": "7.3.6",
+    "vitest": "4.1.11"
+  },
+  "build": {
+    "appId": "com.dime.downloader",
+    "productName": "dlME",
+    "asar": true,
+    "asarUnpack": [
+      "resources/engine/**"
+    ],
+    "directories": {
+      "output": "release/0.9.0"
+    },
+    "files": [
+      "out/**",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/engine",
+        "to": "engine"
+      },
+      {
+        "from": "resources/branding",
+        "to": "branding"
+      },
+      {
+        "from": "resources/licenses",
+        "to": "licenses"
+      },
+      {
+        "from": "resources/docs",
+        "to": "docs"
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "resources/branding/diME.ico",
+      "executableName": "dlME",
+      "legalTrademarks": "dlME"
+    },
+    "nsis": {
+      "artifactName": "dlME-Setup-${version}-${arch}.${ext}",
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "deleteAppDataOnUninstall": false,
+      "installerIcon": "resources/branding/diME.ico",
+      "uninstallerIcon": "resources/branding/diME.ico",
+      "installerHeaderIcon": "resources/branding/diME.ico",
+      "include": "build/installer.nsh",
+      "displayLanguageSelector": false
+    },
+    "portable": {
+      "artifactName": "dlME-Portable-${version}-${arch}.${ext}"
+    }
+  },
+  "allowScripts": {
+    "better-sqlite3@13.0.3": true,
+    "sharp@0.35.4": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.2": true,
+    "electron-winstaller@5.4.0": true,
+    "electron@44.1.0": true
+  }
+}

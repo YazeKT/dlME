@@ -1,0 +1,73 @@
+name: Bug report
+description: Report a reproducible dlME problem
+title: "[Bug]: "
+labels: [bug, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: Remove cookies, credentials, private URLs, personal paths, and downloaded media before submitting.
+  - type: input
+    id: version
+    attributes:
+      label: dlME version
+      placeholder: 0.9.0
+    validations:
+      required: true
+  - type: input
+    id: engine
+    attributes:
+      label: yt-dlp version
+      placeholder: 2026.08.19
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      placeholder: Windows 11 24H2 x64
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Downloader
+        - Files
+        - Supported sites
+        - Settings or updates
+        - Installation or portable mode
+        - Accessibility or interface
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Use a public test URL when a URL is necessary.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result and sanitized logs
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I tested with the newest engine offered by dlME.
+          required: true
+        - label: I removed secrets, cookies, private URLs, and personal information.
+          required: true
+        - label: I have permission to test the media involved.
+          required: true

@@ -1,0 +1,34 @@
+{
+  "release": "0.9.0",
+  "generatedAt": "2026-09-10T04:46:24.436Z",
+  "ytDlp": {
+    "version": "2026.08.19",
+    "sha256": "66674953fe251b89f4d08c5f0e35e0728679bd67ab3d7d05c0562af101dd3e7a",
+    "url": "https://github.com/yt-dlp/yt-dlp/releases/download/2026.08.19/yt-dlp.exe",
+    "source": "https://github.com/yt-dlp/yt-dlp/tree/2026.08.19"
+  },
+  "deno": {
+    "version": "v2.9.6",
+    "archiveSha256": "15e5300b0ba3c3695a7621d90160a746ec9e710228cee639afa9d580f6e3cd11",
+    "url": "https://github.com/denoland/deno/releases/download/v2.9.6/deno-x86_64-pc-windows-msvc.zip",
+    "source": "https://github.com/denoland/deno/tree/v2.9.6"
+  },
+  "ffmpeg": {
+    "version": "N-126374-g089a48eb36-20260831",
+    "release": "autobuild-2026-08-31-20-15",
+    "archive": "ffmpeg-N-126374-g089a48eb36-win64-gpl.zip",
+    "archiveSha256": "fc496061ed2cc5264d7c9c4ec929365f15267aeb40c94fd34ce637a0ea6ce229",
+    "url": "https://github.com/yt-dlp/FFmpeg-Builds/releases/download/autobuild-2026-08-31-20-15/ffmpeg-N-126374-g089a48eb36-win64-gpl.zip",
+    "sourceRevision": "089a48eb36",
+    "source": "https://github.com/FFmpeg/FFmpeg/commit/089a48eb36",
+    "buildRecipes": "https://github.com/yt-dlp/FFmpeg-Builds/tree/autobuild-2026-08-31-20-15",
+    "license": "GPL-3.0-or-later (GPL and version3 enabled)",
+    "configureOutput": "ffmpeg version N-126374-g089a48eb36-20260831 Copyright (c) 2000-2026 the FFmpeg developers\r\nbuilt with gcc 15.2.0 (crosstool-NG 1.28.0.23_185f348)\r\nconfiguration: --prefix=/ffbuild/prefix --pkg-config-flags=--static --pkg-config=pkg-config --cross-prefix=x86_64-w64-mingw32- --arch=x86_64 --target-os=mingw32 --enable-gpl --enable-version3 --disable-debug --disable-w32threads --enable-pthreads --enable-iconv --enable-zlib --enable-libxml2 --enable-libvmaf --enable-fontconfig --enable-libharfbuzz --enable-libfreetype --enable-libfribidi --enable-vulkan --enable-libvorbis --disable-libxcb --disable-xlib --disable-libpulse --enable-gmp --enable-lzma --enable-liblcevc-dec --enable-opencl --enable-amf --enable-libaom --enable-libaribb24 --enable-avisynth --enable-chromaprint --enable-libdav1d --enable-libdavs2 --enable-libdvdread --enable-libdvdnav --disable-libfdk-aac --enable-ffnvcodec --enable-cuda-llvm --enable-frei0r --enable-libgme --enable-libkvazaar --enable-libaribcaption --enable-libass --enable-libbluray --enable-libjxl --enable-libmp3lame --enable-libopus --enable-libplacebo --enable-librist --enable-libssh --enable-libtheora --enable-libvpx --enable-libwebp --enable-libzmq --enable-lv2 --enable-libvpl --enable-openal --enable-liboapv --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenh264 --enable-libopenjpeg --enable-libopenmpt --enable-librav1e --enable-librubberband --enable-schannel --enable-sdl2 --enable-libsnappy --enable-libsoxr --enable-libsrt --enable-libsvtav1 --enable-libtwolame --enable-libuavs3d --disable-libdrm --enable-vaapi --enable-libvidstab --enable-libvvenc --disable-whisper --enable-libx264 --enable-libx265 --enable-libxavs2 --enable-libxvid --enable-libzimg --enable-libzvbi --extra-cflags=-DLIBTWOLAME_STATIC --extra-cxxflags= --extra-libs=-lgomp --extra-ldflags=-pthread --extra-ldexeflags= --cc=x86_64-w64-mingw32-gcc --cxx=x86_64-w64-mingw32-g++ --ar=x86_64-w64-mingw32-gcc-ar --ranlib=x86_64-w64-mingw32-gcc-ranlib --nm=x86_64-w64-mingw32-gcc-nm --extra-version=20260831\r\nlibavutil      61.  6.100 / 61.  6.100\r\nlibavcodec     63.  9.100 / 63.  9.100\r\nlibavformat    63.  6.100 / 63.  6.100\r\nlibavdevice    63.  2.100 / 63.  2.100\r\nlibavfilter    12.  4.100 / 12.  4.100\r\nlibswscale     10.  2.100 / 10.  2.100\r\nlibswresample   7.  2.100 /  7.  2.100\r\n\r\nExiting with exit code 0\r\n"
+  },
+  "binaryChecksums": {
+    "yt-dlp.exe": "66674953fe251b89f4d08c5f0e35e0728679bd67ab3d7d05c0562af101dd3e7a",
+    "ffmpeg.exe": "b9989f24e63be74e72aa45fec10a114ce660b562e4303d5f296f4fc8ba7cc896",
+    "ffprobe.exe": "73842bee6f270e85b2ab6fc3cfa715f614f16ad16700f5de6a9c1a2865cacf00",
+    "deno.exe": "2ff9493dfa356be2975f477025ea770088e9e9cb2c83d983236d13561b96b7a6"
+  }
+}

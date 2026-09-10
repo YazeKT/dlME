@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title">
+  <title id="title">diME</title>
+  <g fill="#00FFA3">
+    <circle cx="76" cy="42" r="18"/>
+    <circle cx="180" cy="42" r="18"/>
+  </g>
+  <path d="M48 208V132C48 76 208 76 208 132V208M104 208V148M152 148V208" fill="none" stroke="#00FFA3" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
