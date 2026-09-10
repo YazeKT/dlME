@@ -19,7 +19,10 @@ jobs:
       - run: npm ci
       - run: npm run fetch:runtimes
       - run: npm run package:win
-      - run: npm run release:check
+      - name: Enforce binary licensing gate
+        run: npm run release:check
+        env:
+          DLME_BINARY_RELEASE: '1'
       - name: Generate checksums
         shell: pwsh
         run: |

@@ -4,6 +4,8 @@
 
 > **Open Beta:** dlME 0.9.0 is functional and tested, but its Windows executables are currently unsigned. Windows may display an unknown-publisher warning.
 
+> **Binary release status:** the Windows packages are temporarily withheld while the complete corresponding-source set for the statically linked GPL FFmpeg dependencies is audited. The source repository and build instructions are available now.
+
 Created by **Kirsten Trimaley** and published by **Yaze Media**.
 
 ## What it does
