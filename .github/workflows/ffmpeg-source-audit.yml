@@ -20,9 +20,7 @@ jobs:
           path: ffmpeg-builds
       - name: Download source inputs using the pinned recipes
         working-directory: ffmpeg-builds
-        run: ./download.sh
-        env:
-          GITHUB_REPOSITORY: yt-dlp/FFmpeg-Builds
+        run: REPO=yt-dlp/FFmpeg-Builds ./download.sh
       - name: Record and package every downloaded source input
         working-directory: ffmpeg-builds
         run: |
