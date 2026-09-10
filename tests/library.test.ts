@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { mkdtemp, mkdir, writeFile, rm, symlink } from 'node:fs/promises'
+import { mkdtemp, mkdir, writeFile, rm, symlink, realpath } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { assertLibraryPath, categoryFor, ensureDownloadFolders, isWithin, scanLibrary } from '../src/main/library'
@@ -25,7 +25,7 @@ describe('download library', () => {
     const current = await root(); const previous = await root(); const file = join(previous, 'song.mp3')
     await writeFile(file, 'audio')
     expect((await scanLibrary(current, [], [previous])).files).toHaveLength(1)
-    expect(await assertLibraryPath([current, previous], file)).toBe(file)
+    expect(await assertLibraryPath([current, previous], file)).toBe(await realpath(file))
   })
   it('rejects traversal, prefix lookalikes, and junction escapes', async () => {
     const path = await root(); const outside = await root(); const file = join(outside, 'secret.txt'); await writeFile(file, 'secret')
