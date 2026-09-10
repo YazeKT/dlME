@@ -1,0 +1,37 @@
+name: Assemble FFmpeg dependency source cache
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  source-cache:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out pinned FFmpeg build recipes
+        uses: actions/checkout@v5
+        with:
+          repository: yt-dlp/FFmpeg-Builds
+          ref: ea2ec3c0e0dfb11069729b7df5cb234bb2145956
+          path: ffmpeg-builds
+      - name: Download source inputs using the pinned recipes
+        working-directory: ffmpeg-builds
+        run: ./download.sh
+      - name: Record and package every downloaded source input
+        working-directory: ffmpeg-builds
+        run: |
+          find .cache/downloads -type f -print0 | sort -z | xargs -0 sha256sum > ffmpeg-dependency-source-checksums.txt
+          tar -cf ffmpeg-dependency-sources.tar .cache/downloads ffmpeg-dependency-source-checksums.txt
+      - name: Upload audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-dependency-sources-2026-08-31
+          path: |
+            ffmpeg-builds/ffmpeg-dependency-sources.tar
+            ffmpeg-builds/ffmpeg-dependency-source-checksums.txt
+          if-no-files-found: error
+          retention-days: 7
