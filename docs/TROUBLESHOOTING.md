@@ -4,9 +4,9 @@
 
 Check that FFmpeg and FFprobe are available in Settings, update yt-dlp, and retry. Include the selected format and sanitized final log lines in a bug report. Completed video should not be reported until FFprobe recognizes a playable media stream and MP4 container.
 
-## Chromium cookie decryption failed
+## Chrome cookie database could not be copied or decrypted
 
-Retry public media with browser cookies disabled. For media that requires an account, close the browser and try Firefox. Windows DPAPI can prevent another process from decrypting Chromium-profile cookies.
+dlME 0.9.1 automatically retries public media once without browser access. For media that requires an account, fully exit Chrome, Edge, or Brave, including background processes, then select Retry. If the profile remains unavailable, use a signed-in Firefox profile. Windows can lock or restrict Chromium cookie databases while the browser is running.
 
 ## Site challenge or access denied
 

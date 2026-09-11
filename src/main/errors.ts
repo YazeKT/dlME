@@ -1,10 +1,24 @@
 export interface ClassifiedError { code: string; message: string; actions: string[] }
 
+export function isBrowserCookieAccessError(raw: string): boolean {
+  const text = raw.replace(/\x1b\[[0-9;]*m/g, '').toLowerCase()
+  return /failed to decrypt with dpapi|cookie.*decrypt|app-bound encryption/.test(text)
+    || /could not copy (?:chrome\s+)?cookie database/.test(text)
+    || /(?:permissionerror|errno\s*13)[\s\S]{0,500}(?:network[\\/]+cookies|cookie database)/.test(text)
+}
+
+export function sanitizeEngineLog(raw: string): string {
+  return raw
+    .replace(/([a-z]:\\users\\)[^\\\r\n]+/gi, '$1[redacted]')
+    .replace(/(cookie|authorization|token|password|secret)(\s*[:=]\s*)\S+/gi, '$1$2[redacted]')
+    .slice(0, 2000)
+}
+
 export function classifyEngineError(raw: string): ClassifiedError {
   const text = raw.replace(/\x1b\[[0-9;]*m/g, '').trim()
   const lower = text.toLowerCase()
   if (/cloudflare|anti-bot|captcha|confirm you.re not a bot/.test(lower)) return { code: 'site_challenge', message: 'The website blocked this request with a browser or anti-bot challenge. Try again later or use the website directly.', actions: ['Open in browser', 'Retry later'] }
-  if (/failed to decrypt with dpapi|cookie.*decrypt|app-bound encryption/.test(lower)) return { code: 'cookie_decryption_failed', message: 'Windows could not decrypt this browser profile. Public media can continue without browser access; use Firefox for authenticated downloads.', actions: ['Disable browser access', 'Try Firefox', 'Export diagnostics'] }
+  if (isBrowserCookieAccessError(text)) return { code: 'cookie_decryption_failed', message: 'Windows could not read the selected browser profile. Public media can continue without browser access; fully exit Chrome, Edge, or Brave, or use Firefox for authenticated downloads.', actions: ['Continue without browser access', 'Fully exit the browser', 'Try Firefox'] }
   if (/sign in|login required|cookies|private video|members-only/.test(lower)) return { code: 'authentication_required', message: 'This media needs an authenticated browser session.', actions: ['Enable browser access', 'Retry'] }
   if (/429|too many requests|rate.?limit/.test(lower)) return { code: 'rate_limited', message: 'The website is temporarily rate-limiting requests. Wait before retrying.', actions: ['Retry later', 'Reduce concurrency'] }
   if (/geo|not available in your country|region/.test(lower)) return { code: 'geo_blocked', message: 'This media is not available in the current region.', actions: ['Open in browser'] }

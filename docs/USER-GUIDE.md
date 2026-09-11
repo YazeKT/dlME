@@ -18,7 +18,7 @@ The activity area shows information reported by yt-dlp and dlME. Progress, speed
 
 ## Browser sessions
 
-Browser cookies are disabled by default. Use them only when a site requires a session and you have permission to save the media. Firefox is usually the most reliable option on Windows because Chromium-profile encryption can block cookie access. Never attach cookie files to public issues.
+Browser cookies are disabled by default. Use them only when a site requires a session and you have permission to save the media. If Chrome, Edge, or Brave keeps its cookie database locked, dlME retries public media once without browser access. For account-required media, fully exit the browser, including background processes, or use a signed-in Firefox profile. Never attach cookie files to public issues.
 
 ## Files
 

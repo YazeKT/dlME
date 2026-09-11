@@ -7,7 +7,8 @@ import assert from 'node:assert/strict'
 
 const require = createRequire(import.meta.url)
 const { _electron: electron } = require(process.env.DLME_PLAYWRIGHT_PATH || 'playwright')
-const root = resolve('verification/0.9.0')
+const release = JSON.parse(await readFile(resolve('package.json'), 'utf8')).version
+const root = resolve(`verification/${release}`)
 const profile = join(root, `profile-${Date.now()}`)
 const downloads = join(profile, 'Downloads')
 await mkdir(downloads, { recursive: true })
@@ -33,7 +34,7 @@ try {
   console.log('Loaded beta window')
   await page.evaluate(async (folder) => { await window.dime.updateSettings({ outputDirectory: folder, tutorialCompleted: true, engineAutoCheck: false, completionNotifications: false, completionSound: false }) }, downloads)
   await page.reload(); await page.getByRole('heading', { name: 'Download media', exact: true }).waitFor()
-  assert.match(await page.locator('.version').innerText(), /dlME v0\.9\.0.*Open Beta/)
+  assert.match(await page.locator('.version').innerText(), new RegExp(`dlME v${release.replaceAll('.', '\\.') }.*Open Beta`))
   assert.equal(await page.getByText('Download defaults', { exact: true }).count(), 0)
   assert.equal(await page.locator('.title-stats').count(), 0)
   assert.equal(await page.locator('.status-right').count(), 0)

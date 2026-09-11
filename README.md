@@ -11,7 +11,7 @@
 
 <p align="center">
   <a href="https://github.com/YazeKT/dlME/actions/workflows/ci.yml"><img alt="Windows CI" src="https://github.com/YazeKT/dlME/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="https://github.com/YazeKT/dlME/releases"><img alt="Open Beta 0.9.0" src="https://img.shields.io/badge/release-0.9.0%20Open%20Beta-00e6a0"></a>
+  <a href="https://github.com/YazeKT/dlME/releases"><img alt="Open Beta 0.9.1" src="https://img.shields.io/badge/release-0.9.1%20Open%20Beta-00e6a0"></a>
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-1b2521"></a>
   <img alt="Windows 10 and 11" src="https://img.shields.io/badge/Windows-10%20%7C%2011-087cd5">
 </p>
@@ -33,7 +33,7 @@ Get the Windows installer or portable build from **[GitHub Releases](https://git
 | **Setup x64** | Normal Windows installation and shortcuts | Windows application-data folder |
 | **Portable x64** | USB drives and self-contained use | `dlME-data` beside the executable |
 
-dlME 0.9.0 is an unsigned Open Beta. Verify the downloaded file against `SHA256SUMS.txt`; Windows may display an unknown-publisher warning.
+dlME 0.9.1 is an unsigned Open Beta. Verify the downloaded file against `SHA256SUMS.txt`; Windows may display an unknown-publisher warning.
 
 ## Designed around the complete download workflow
 
@@ -46,7 +46,7 @@ dlME 0.9.0 is an unsigned Open Beta. Verify the downloaded file against `SHA256S
 - **Safe recovery:** Stop & keep partial preserves supported transfer data for a later retry.
 - **Independent Files browser:** clearing history does not hide media that still exists on disk.
 - **Current extractor directory:** Supported reads the full list reported by the installed yt-dlp engine.
-- **Optional browser sessions:** browser access stays off until a user enables it for account-required media.
+- **Optional browser sessions:** browser access stays off until a user enables it for account-required media. If Chromium locks its cookie database, public media retries once without browser access.
 - **Local-first data:** settings, history, logs, and imported legal documents remain on the computer.
 
 <table>
@@ -98,7 +98,7 @@ Runtime downloads are release-pinned and SHA-256 verified. The renderer is sandb
 - 28 automated behavior tests
 - TypeScript strict mode
 - Clean Windows CI build from `npm ci`
-- Zero known npm audit findings at the 0.9.0 source tag
+- Zero known npm audit findings at the 0.9.1 source tag
 - Canonical-path checks for file open and reveal actions
 - FFprobe validation before successful media completion
 - Pinned runtime origins, versions, and hashes

@@ -25,7 +25,7 @@ npm run dev
 npm run package:win
 ```
 
-Artifacts are written to `release/0.9.0`. Run `npm run release:check` before upload.
+Artifacts are written to the versioned directory under `release` (currently `release/0.9.1`). Run `npm run release:check` before upload.
 
 ## Corresponding source
 

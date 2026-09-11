@@ -1,6 +1,6 @@
 # Engine provenance
 
-dlME 0.9.0 uses the following pinned Windows x64 runtimes.
+dlME 0.9.1 uses the following pinned Windows x64 runtimes.
 
 | Component | Version | Release artifact SHA-256 |
 | --- | --- | --- |
@@ -10,6 +10,6 @@ dlME 0.9.0 uses the following pinned Windows x64 runtimes.
 
 The exact URLs are recorded in `resources/engine/runtime-manifest.json`. `npm run fetch:runtimes` verifies these hashes before installing the files.
 
-The FFmpeg build is from `yt-dlp/FFmpeg-Builds` release `autobuild-2026-08-31-20-15`. Its configuration enables GPL and version 3, including libx264, and the binary is GPL-3.0-or-later. The public release must include `dlME-0.9.0-corresponding-source.zip` alongside the executable artifacts.
+The FFmpeg build is from `yt-dlp/FFmpeg-Builds` release `autobuild-2026-08-31-20-15`. Its configuration enables GPL and version 3, including libx264, and the binary is GPL-3.0-or-later. The public release must include the matching `dlME-0.9.1-corresponding-source-core.zip` and checksummed FFmpeg dependency-source parts alongside the executable artifacts.
 
 An engine update changes executable code and may change licensing. Each dlME release must regenerate its manifest, dependency notices, corresponding-source package, smoke results, and checksums.

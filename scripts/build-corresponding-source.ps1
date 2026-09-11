@@ -14,7 +14,7 @@ function Get-Sha256([string]$Path) {
   } finally { $stream.Dispose() }
 }
 
-$release = '0.9.0'
+$release = (Get-Content -LiteralPath 'package.json' -Raw | ConvertFrom-Json).version
 $packageRoot = Join-Path $OutputRoot "dlME-$release-corresponding-source"
 $downloads = Join-Path $packageRoot 'upstream-source'
 $dependencies = Join-Path $downloads 'ffmpeg-dependencies'
@@ -70,7 +70,7 @@ if ($hasLocalArtifact) {
   $manifest += [pscustomobject]@{ file = 'upstream-source/ffmpeg-dependencies/ffmpeg-dependency-sources.tar'; sha256 = Get-Sha256 (Join-Path $dependencies 'ffmpeg-dependency-sources.tar'); source = if ($sourceAuditUrl) { $sourceAuditUrl } else { 'GitHub Actions FFmpeg source-audit artifact' } }
   $manifest += [pscustomobject]@{ file = 'upstream-source/ffmpeg-dependencies/ffmpeg-dependency-source-checksums.txt'; sha256 = Get-Sha256 (Join-Path $dependencies 'ffmpeg-dependency-source-checksums.txt'); source = 'yt-dlp/FFmpeg-Builds download.sh at ea2ec3c0e0dfb11069729b7df5cb234bb2145956' }
 } elseif ($hasVerifiedRemoteArtifact) {
-  $manifest += [pscustomobject]@{ file = 'companion release assets: dlME-0.9.0-corresponding-source-ffmpeg.tar.part-*'; sha256 = 'See dlME-0.9.0-corresponding-source-part-checksums.txt in the release'; source = $sourceAuditUrl }
+  $manifest += [pscustomobject]@{ file = "companion release assets: dlME-$release-corresponding-source-ffmpeg.tar.part-*"; sha256 = "See dlME-$release-corresponding-source-part-checksums.txt in the release"; source = $sourceAuditUrl }
 }
 
 Copy-Item -LiteralPath 'resources\licenses\GPL-3.0.txt' -Destination $packageRoot -Force
@@ -80,9 +80,9 @@ $manifest | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $packa
 
 if ($isComplete) {
   @'
-# dlME 0.9.0 corresponding source
+# dlME __RELEASE__ corresponding source
 
-This package accompanies the dlME 0.9.0 Windows binaries. It contains the
+This package accompanies the dlME __RELEASE__ Windows binaries. It contains the
 matching yt-dlp release source, FFmpeg revision, and pinned FFmpeg-Builds
 recipes. The dependency-source cache assembled by those recipes is supplied in
 the same GitHub release as numbered `corresponding-source-ffmpeg.tar.part-*`
@@ -97,7 +97,7 @@ The companion cache was produced by `download.sh` from yt-dlp/FFmpeg-Builds comm
 ea2ec3c0e0dfb11069729b7df5cb234bb2145956. Use the included recipes and source
 inputs to study, modify, or rebuild the GPL runtime. dlME application source is
 available from https://github.com/YazeKT/dlME.
-'@ | Set-Content -LiteralPath (Join-Path $packageRoot 'README.md') -Encoding utf8
+'@.Replace('__RELEASE__', $release) | Set-Content -LiteralPath (Join-Path $packageRoot 'README.md') -Encoding utf8
   @"
 dlME $release corresponding-source package
 Completed: $([DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ssZ'))
@@ -108,15 +108,15 @@ Verified source-audit run: $sourceAuditUrl
   $archive = Join-Path $OutputRoot "dlME-$release-corresponding-source-core.zip"
 } else {
   @'
-# Corresponding-source package status
+# dlME __RELEASE__ corresponding-source package status
 
 This workspace contains the exact yt-dlp source release, matching FFmpeg
-revision, and pinned FFmpeg-Builds recipes used for dlME 0.9.0.
+revision, and pinned FFmpeg-Builds recipes used for dlME __RELEASE__.
 
 Download the artifact produced by `ffmpeg-source-audit.yml` into
 `release-source/source-audit-artifact` and run this script again. Binary
 publication remains blocked until the dependency archive is present.
-'@ | Set-Content -LiteralPath (Join-Path $packageRoot 'README.md') -Encoding utf8
+'@.Replace('__RELEASE__', $release) | Set-Content -LiteralPath (Join-Path $packageRoot 'README.md') -Encoding utf8
   $archive = Join-Path $OutputRoot "dlME-$release-corresponding-source-INCOMPLETE.zip"
 }
 

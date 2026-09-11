@@ -1,15 +1,16 @@
 import { createRequire } from 'node:module'
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { resolve, join } from 'node:path'
 import assert from 'node:assert/strict'
 
 const require = createRequire(import.meta.url)
 const { _electron } = require(process.env.DLME_PLAYWRIGHT_PATH || 'playwright')
-const root = resolve('verification/0.9.0')
+const release = JSON.parse(await readFile(resolve('package.json'), 'utf8')).version
+const root = resolve(`verification/${release}`)
 const profile = join(root, `public-profile-${Date.now()}`)
 const downloads = join(profile, 'Downloads'); await mkdir(downloads, { recursive: true })
 const env = { ...process.env, DLME_TEST_DATA: profile }; delete env.ELECTRON_RUN_AS_NODE
-const app = await _electron.launch({ executablePath: process.env.DLME_TEST_EXE || resolve('release/0.9.0/win-unpacked/dlME.exe'), args: [], env, timeout: 60000 })
+const app = await _electron.launch({ executablePath: process.env.DLME_TEST_EXE || resolve(`release/${release}/win-unpacked/dlME.exe`), args: [], env, timeout: 60000 })
 try {
   const page = await app.firstWindow(); await page.waitForLoadState('load')
   await page.evaluate(async (folder) => { await window.dime.updateSettings({ outputDirectory: folder, tutorialCompleted: true, engineAutoCheck: false, completionSound: false, completionNotifications: false }) }, downloads)

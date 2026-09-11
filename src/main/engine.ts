@@ -7,7 +7,7 @@ import { promisify } from 'node:util'
 import type { Readable } from 'node:stream'
 import type { AnalyzeRequest, DimeLogEntry, EnqueueRequest, FormatInfo, JobProgress, JobRecord, MediaAnalysis, MediaEntry } from '../shared/types'
 import { DimeDatabase } from './database'
-import { classifyEngineError } from './errors'
+import { classifyEngineError, isBrowserCookieAccessError, sanitizeEngineLog } from './errors'
 import { buildFormatArguments } from './format'
 import { parseProgress } from './progress'
 import { categories } from './library'
@@ -55,13 +55,13 @@ export class DownloadEngine {
       const { stdout } = await this.runCapture(args, 120_000)
       return normalizeAnalysis(url, JSON.parse(stdout) as Record<string, unknown>)
     } catch (error) {
-      if (request.browser?.enabled && error instanceof EngineRunError && isDpapiError(error.detail)) {
+      if (request.browser?.enabled && error instanceof EngineRunError && isBrowserCookieAccessError(error.detail)) {
         const { stdout } = await this.runCapture([
           '--ignore-config', '--dump-single-json', '--skip-download', '--no-warnings', '--flat-playlist',
           ...this.runtimeArgs(), url
         ], 120_000)
         const analysis = normalizeAnalysis(url, JSON.parse(stdout) as Record<string, unknown>)
-        analysis.notice = 'Windows could not decrypt this browser profile. dlME continued without account access. Use Firefox for authenticated downloads, or disable browser access for public YouTube media.'
+        analysis.notice = 'Chrome’s cookie database is currently unavailable. dlME continued without browser access. Fully exit Chrome, Edge, or Brave, or use Firefox for authenticated downloads.'
         return analysis
       }
       throw error
@@ -123,7 +123,10 @@ export class DownloadEngine {
     void this.schedule()
   }
 
-  retry(id: string): void { this.resume(id) }
+  retry(id: string): void {
+    this.cookieFallbackJobs.delete(id)
+    this.resume(id)
+  }
 
   private async schedule(): Promise<void> {
     if (this.scheduling) return
@@ -164,6 +167,7 @@ export class DownloadEngine {
     this.log(job.id, 'info', `Started attempt ${current.attempts} with ${job.options.kind === 'audio' ? job.options.audioContainer.toUpperCase() : `${job.options.quality === 'best' ? 'best quality' : `${job.options.quality}p`} ${job.options.videoContainer.toUpperCase()}`}.`)
     let stdoutBuffer = ''
     let stderr = ''
+    let cookieWarningLogged = false
     let finalPath: string | undefined
     const startedAt = Date.now()
     let lastPhase = ''
@@ -188,7 +192,16 @@ export class DownloadEngine {
     })
     child.stderr.on('data', (chunk: string) => {
       stderr = `${stderr}${chunk}`.slice(-32_000)
-      for (const line of chunk.split(/\r?\n/).filter((value) => /warning|error/i.test(value))) this.log(job.id, /error/i.test(line) ? 'error' : 'warning', redactLog(line))
+      for (const line of chunk.split(/\r?\n/)) {
+        if (isBrowserCookieAccessError(line)) {
+          if (!cookieWarningLogged) {
+            cookieWarningLogged = true
+            this.log(job.id, 'warning', 'Chrome’s cookie database is currently locked. dlME will retry this public media without browser access.')
+          }
+        } else if (/^(?:WARNING|ERROR):/i.test(line.trim())) {
+          this.log(job.id, /error/i.test(line) ? 'error' : 'warning', sanitizeEngineLog(line))
+        }
+      }
     })
     child.on('error', (error) => { stderr += `\n${error.message}` })
     child.on('close', async (code) => {
@@ -215,11 +228,11 @@ export class DownloadEngine {
           if (settings.completionSound) shell.beep()
         }
         else this.block(job.id, latest, 'invalid_output', validation.message)
-      } else if (isDpapiError(stderr) && job.options.browser?.enabled && !this.cookieFallbackJobs.has(job.id)) {
+      } else if (isBrowserCookieAccessError(stderr) && job.options.browser?.enabled && !this.cookieFallbackJobs.has(job.id)) {
         this.cookieFallbackJobs.add(job.id)
-        const retry = this.db.updateJob(job.id, { state: 'queued', errorCode: 'cookie_decryption_failed', errorMessage: 'Browser cookies could not be decrypted. Retrying public access without cookies.', progress: { ...latest.progress, phase: 'Retrying without browser session' } })
+        const retry = this.db.updateJob(job.id, { state: 'queued', errorCode: 'cookie_decryption_failed', errorMessage: 'Browser cookies are unavailable. Retrying without browser access.', progress: { ...latest.progress, phase: 'Retrying without browser session' } })
         this.notify(retry)
-        this.log(job.id, 'warning', 'DPAPI could not decrypt the selected browser profile. Retrying without account access; Firefox is recommended for authenticated downloads.')
+        if (!cookieWarningLogged) this.log(job.id, 'warning', 'Browser cookies are unavailable. Retrying without browser access. Fully exit Chrome, Edge, or Brave, or use Firefox for authenticated downloads.')
         setTimeout(() => void this.schedule(), 500)
       } else if (latest.attempts < settings.retryLimit && isTransient(stderr)) {
         const retry = this.db.updateJob(job.id, { state: 'queued', errorMessage: 'A temporary error occurred. dlME will retry automatically.', progress: { ...latest.progress, phase: `Retrying (${latest.attempts + 1}/${settings.retryLimit})` } })
@@ -344,7 +357,6 @@ function browserArgs(browser?: { enabled: boolean; browser?: string; profile?: s
 }
 
 function isTransient(stderr: string): boolean { return /timed? out|temporary|connection|reset by peer|http error 5\d\d|fragment|network is unreachable|remote end closed/i.test(stderr) }
-function isDpapiError(value: string): boolean { return /failed to decrypt with DPAPI|cookie.*decrypt|app-bound encryption/i.test(value) }
 function extractMediaId(value?: string): string | undefined {
   if (!value) return undefined
   const bracket = value.match(/\[([A-Za-z0-9_-]{5,})\](?:\.[^\\/]+)?$/)?.[1]
@@ -362,7 +374,7 @@ export function recoverFinalOutputPath(reportedPath: string | undefined, outputD
     })
     .sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs)[0]
 }
-function redactLog(value: string): string { return value.replace(/(cookie|authorization|token|password|secret)(\s*[:=]\s*)\S+/gi, '$1$2[redacted]').slice(0, 2000) }
+function redactLog(value: string): string { return sanitizeEngineLog(value) }
 
 class EngineRunError extends Error { constructor(readonly detail: string, message: string) { super(message) } }
 

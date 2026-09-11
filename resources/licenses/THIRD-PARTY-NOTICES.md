@@ -18,7 +18,7 @@ yt-dlp source uses the Unlicense. The official PyInstaller Windows executable in
 - Project: <https://ffmpeg.org/>
 - Build recipes: <https://github.com/yt-dlp/FFmpeg-Builds/tree/autobuild-2026-08-31-20-15>
 
-The bundled static build enables GPL and version 3 components, including libx264. It is GPL-3.0-or-later and is not part of dlME's MIT license. A public binary release must distribute matching source and build materials beside the Windows binaries in a `dlME-0.9.0-corresponding-source.zip` release asset.
+The bundled static build enables GPL and version 3 components, including libx264. It is GPL-3.0-or-later and is not part of dlME's MIT license. A public binary release must distribute matching source and build materials beside the Windows binaries in version-matched corresponding-source assets.
 
 ## Deno 2.9.6
 

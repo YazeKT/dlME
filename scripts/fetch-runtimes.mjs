@@ -1,9 +1,10 @@
 import { createHash } from 'node:crypto'
-import { copyFile, mkdir, readdir, rm, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
 
 const destination = resolve('resources/engine')
+const release = JSON.parse(await readFile(resolve('package.json'), 'utf8')).version
 const versions = {
   ytDlp: '2026.08.19',
   deno: 'v2.9.6',
@@ -15,7 +16,7 @@ const expected = {
   denoZip: '15e5300b0ba3c3695a7621d90160a746ec9e710228cee639afa9d580f6e3cd11',
   ffmpegZip: 'fc496061ed2cc5264d7c9c4ec929365f15267aeb40c94fd34ce637a0ea6ce229'
 }
-const headers = { Accept: 'application/octet-stream', 'User-Agent': 'dlME-release/0.9.0' }
+const headers = { Accept: 'application/octet-stream', 'User-Agent': `dlME-release/${release}` }
 
 await mkdir(destination, { recursive: true })
 
@@ -48,7 +49,7 @@ await rm(ffmpegExpanded, { recursive: true, force: true })
 await rm(ffmpegZipPath, { force: true })
 
 const manifest = {
-  release: '0.9.0',
+  release,
   generatedAt: new Date().toISOString(),
   ytDlp: { version: versions.ytDlp, sha256: expected.ytDlpExe, url: ytUrl, source: `https://github.com/yt-dlp/yt-dlp/tree/${versions.ytDlp}` },
   deno: { version: versions.deno, archiveSha256: expected.denoZip, url: denoUrl, source: `https://github.com/denoland/deno/tree/${versions.deno}` },

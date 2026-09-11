@@ -1,6 +1,6 @@
 # dlME local data and use
 
-dlME 0.9.0 is an open beta. Download only material you own or have permission
+dlME 0.9.1 is an open beta. Download only material you own or have permission
 to save. Supported-site listings do not grant rights to media or access.
 
 Downloads remain in the selected folders on this PC. Download history,

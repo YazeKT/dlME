@@ -14,7 +14,7 @@ const required = [
 ]
 const errors = []
 for (const file of required) if (!existsSync(resolve(root, file))) errors.push(`Missing required file: ${file}`)
-if (pkg.name !== 'dlme' || pkg.version !== '0.9.0' || pkg.license !== 'MIT' || pkg.private !== true) errors.push('package.json release identity is inconsistent')
+if (pkg.name !== 'dlme' || !/^0\.\d+\.\d+$/.test(pkg.version) || pkg.license !== 'MIT' || pkg.private !== true) errors.push('package.json release identity is inconsistent')
 
 const manifest = JSON.parse(await readFile(resolve(root, 'resources/engine/runtime-manifest.json'), 'utf8'))
 const expectedBinaries = {
@@ -39,7 +39,7 @@ for (const file of tracked) {
 }
 
 if (process.env.DLME_BINARY_RELEASE === '1') {
-  const marker = resolve(root, 'release-source', 'dlME-0.9.0-corresponding-source', 'SOURCE-PACKAGE-COMPLETE.txt')
+  const marker = resolve(root, 'release-source', `dlME-${pkg.version}-corresponding-source`, 'SOURCE-PACKAGE-COMPLETE.txt')
   if (!existsSync(marker)) errors.push('Binary release blocked: verified corresponding-source completion marker is missing')
 }
 

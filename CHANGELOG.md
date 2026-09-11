@@ -9,6 +9,20 @@ All notable public changes to dlME are recorded here. The project uses semantic 
 - Continue compatibility testing as supported websites change.
 - Add signed Windows releases when a code-signing certificate is available.
 
+## [0.9.1] - 2026-09-11
+
+### Fixed: Chromium cookie recovery
+
+- Recognized yt-dlp's `Could not copy Chrome cookie database` failure and contextual cookie-database permission errors.
+- Retried public analysis and downloads once without browser access when Chrome, Edge, or Brave cookies are unavailable.
+- Reset the temporary fallback on manual Retry so an authenticated browser session can be attempted again.
+
+### Minor: clearer and safer diagnostics
+
+- Replaced raw cookie-access tracebacks with one actionable live-log message.
+- Removed Windows profile names and credential-shaped values from engine log messages.
+- Expanded Settings, the user guide, and troubleshooting guidance for locked Chromium profiles and Firefox recovery.
+
 ## [0.9.0] - 2026-09-10
 
 ### Major: a complete Open Beta workspace
@@ -49,5 +63,6 @@ All notable public changes to dlME are recorded here. The project uses semantic 
 
 Internal builds from 2026-09-01 used 1.x labels. Those builds were not public releases. Public Open Beta numbering begins at 0.9.0.
 
-[Unreleased]: https://github.com/YazeKT/dlME/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/YazeKT/dlME/compare/v0.9.1...HEAD
+[0.9.1]: https://github.com/YazeKT/dlME/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/YazeKT/dlME/releases/tag/v0.9.0
