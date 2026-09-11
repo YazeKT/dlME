@@ -2,6 +2,11 @@ name: Build Windows release
 
 on:
   workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: Successful FFmpeg source-audit workflow run ID
+        required: true
+        default: '34488165224'
 
 permissions:
   contents: read
@@ -18,23 +23,29 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run fetch:runtimes
+      - name: Prepare matching corresponding-source core
+        shell: pwsh
+        run: ./scripts/build-corresponding-source.ps1 -SourceAuditRunId '${{ inputs.source_run_id }}'
       - run: npm run package:win
       - name: Enforce binary licensing gate
         run: npm run release:check
         env:
           DLME_BINARY_RELEASE: '1'
       - name: Generate checksums
+        id: package
         shell: pwsh
         run: |
-          Get-ChildItem release/0.9.0 -File | Where-Object Extension -in '.exe','.blockmap' | ForEach-Object {
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          "version=$version" >> $env:GITHUB_OUTPUT
+          Get-ChildItem "release/$version" -File | Where-Object Extension -in '.exe','.blockmap' | ForEach-Object {
             $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLowerInvariant()
             "$hash *$($_.Name)"
-          } | Set-Content -Encoding ascii release/0.9.0/SHA256SUMS.txt
+          } | Set-Content -Encoding ascii "release/$version/SHA256SUMS.txt"
       - uses: actions/upload-artifact@v4
         with:
-          name: dlME-0.9.0-windows-unsigned
+          name: dlME-${{ steps.package.outputs.version }}-windows-unsigned
           path: |
-            release/0.9.0/*.exe
-            release/0.9.0/*.blockmap
-            release/0.9.0/SHA256SUMS.txt
+            release/${{ steps.package.outputs.version }}/*.exe
+            release/${{ steps.package.outputs.version }}/*.blockmap
+            release/${{ steps.package.outputs.version }}/SHA256SUMS.txt
           if-no-files-found: error
