@@ -28,7 +28,8 @@
     "verify": "npm run build",
     "licenses": "node scripts/generate-notices.mjs",
     "release:check": "node scripts/release-check.mjs",
-    "release:source": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-corresponding-source.ps1"
+    "release:source": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-corresponding-source.ps1",
+    "website:sync": "node scripts/sync-website.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "2.1.10",

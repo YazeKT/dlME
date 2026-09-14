@@ -95,7 +95,7 @@ Runtime downloads are release-pinned and SHA-256 verified. The renderer is sandb
 
 ## Project quality
 
-- 28 automated behavior tests
+- 32 automated behavior tests
 - TypeScript strict mode
 - Clean Windows CI build from `npm ci`
 - Zero known npm audit findings at the 0.9.1 source tag

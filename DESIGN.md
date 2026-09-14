@@ -1,4 +1,4 @@
-# diME Design System
+# dlME Design System
 
 ## Visual Direction
 High-fidelity Windows application with a macOS-inspired interaction model. Strict dark mode with OLED black foundations and high-contrast electric mint accents.
@@ -20,3 +20,11 @@ High-fidelity Windows application with a macOS-inspired interaction model. Stric
 - **Borders**: 1px solid `--border`
 - **Shadows**: Soft, deep feather shadows for elevated panels
 - **Interactions**: Spring-based transforms, 0.2s ease-out transitions, focus-visible mint rings
+
+## Product Website
+
+- The website extends the application interface rather than introducing a separate campaign palette.
+- OLED black and charcoal surfaces remain continuous between sections; structure comes from surface steps and hairline borders instead of large light bands.
+- Electric mint is the only high-energy brand accent. Warning and danger colors appear only for truthful product states.
+- Segoe UI Variable carries headings and body copy. Cascadia Mono is reserved for versions, logs, states, checksums, and build evidence.
+- Motion must explain product behavior: progress, verification, recovery, filing, and live status. Reduced-motion visitors receive the complete static state.

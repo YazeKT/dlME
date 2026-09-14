@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="dlME is a resilient Windows media downloader with verified output, truthful live progress, and a local file library." />
+    <meta name="theme-color" content="#000000" />
+    <meta property="og:title" content="dlME — From link to verified local file." />
+    <meta property="og:description" content="Verified media output. Live download truth. Local files that stay yours." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://yazekt.github.io/dlME/assets/dlme-product-flow.webp" />
+    <meta property="og:url" content="https://yazekt.github.io/dlME/" />
+    <link rel="canonical" href="https://yazekt.github.io/dlME/" />
+    <title>dlME — Windows media downloader</title>
+    <link rel="icon" href="assets/dlme-logo.png" />
+    <link rel="stylesheet" href="styles.css?v=3" />
+    <script src="site-data.js?v=3"></script>
+    <script src="app.js?v=3" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="scroll-progress" aria-hidden="true"><span data-scroll-progress></span></div>
+
+    <header class="site-header" data-header>
+      <a class="brand" href="#top" aria-label="dlME home"><img src="assets/dlme-logo.png" alt="" width="34" height="34" /><span>dlME</span></a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span class="sr-only">Open menu</span><span></span><span></span></button>
+      <nav id="site-nav" class="site-nav" aria-label="Main navigation"><a href="#standouts">Why dlME</a><a href="#workflow">Workflow</a><a href="#build">Build facts</a><a href="#questions">Questions</a></nav>
+      <a class="header-cta" data-release-link href="https://github.com/YazeKT/dlME/releases">Get dlME <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="hero-copy" data-reveal>
+          <div class="release-line"><span class="live-dot" aria-hidden="true"></span><span>Open Beta <b data-version>0.9.1</b></span><span class="release-divider" aria-hidden="true"></span><span>Windows 10 &amp; 11 · x64</span></div>
+          <h1>From link to<br /><span>verified local file.</span></h1>
+          <p class="hero-lede">Analyze a URL or playlist, choose video or audio, follow real speed and ETA, and let FFprobe verify the finished media before dlME calls it complete.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" data-release-link href="https://github.com/YazeKT/dlME/releases">Download for Windows <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2v10m0 0 4-4m-4 4L6 8M3 15v2h14v-2" /></svg></a>
+            <a class="button button-secondary" href="#standouts">Explore the features</a>
+          </div>
+          <p class="microcopy">Free and open source · Setup + portable · Current executables unsigned</p>
+        </div>
+
+        <div class="hero-product" data-reveal>
+          <figure class="product-art product-art-hero">
+            <img src="assets/dlme-product-flow.webp" alt="A media source passing through dlME processing into a verified local file" width="1536" height="1024" />
+            <figcaption><span>LINK TO LOCAL FILE</span><strong>Process visible. Output verified.</strong></figcaption>
+            <div class="job-float" aria-label="Example download status">
+              <div class="job-float-top"><span><i></i> DOWNLOADING</span><strong>78%</strong></div>
+              <p>Preparing verified MP4 output</p><div class="job-progress"><span></span></div><div class="job-meta"><span>12.4 MB/s</span><span>00:08 left</span></div>
+            </div>
+          </figure>
+        </div>
+
+        <ul class="hero-proof" aria-label="Core product facts">
+          <li><strong>FFprobe</strong><span>verified completion</span></li><li><strong>Live</strong><span>speed, ETA &amp; logs</span></li><li><strong>Local</strong><span>files &amp; app data</span></li><li><strong data-extractors>1,752</strong><span>extractor entries</span></li>
+        </ul>
+      </section>
+
+      <section class="intro section" id="standouts">
+        <div class="section-kicker" data-reveal><span>WHY dlME</span><i></i></div>
+        <div class="intro-grid" data-reveal><h2>The downloader that stays honest about the whole job.</h2><p>Most download tools focus on the button. dlME focuses on everything that decides whether the file is actually useful: the source, output, transfer, recovery, verification, and where the result lives afterward.</p></div>
+      </section>
+
+      <section class="standout section-edge">
+        <div class="standout-copy" data-reveal>
+          <span class="feature-number">VERIFIED OUTPUT</span><h2>“Complete” means the file passed inspection.</h2>
+          <p>dlME does not treat a finished process as proof of a good file. FFmpeg prepares the requested output, then FFprobe checks the final container and playable streams before completion is reported.</p>
+          <ul class="check-list"><li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-9" /></svg>MP4 is the practical video default</li><li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-9" /></svg>Exact streams still honor the selected container</li><li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-9" /></svg>Playable media is checked before success</li></ul>
+        </div>
+        <figure class="product-art" data-reveal><img src="assets/dlme-verified-output.webp" alt="A finished media file passing through a precise verification scanner" width="1536" height="1024" loading="lazy" /><figcaption><span>FFPROBE VERIFICATION</span><strong>Finished is not the same as verified.</strong></figcaption></figure>
+      </section>
+
+      <section class="standout standout-reverse section-edge">
+        <div class="recovery-console" data-reveal aria-label="Example dlME recovery log">
+          <div class="console-top"><span></span><strong>LIVE DOWNLOAD LOG</strong><small>AUTOMATICALLY REDACTED</small></div>
+          <div class="console-lines"><p><time>14:22:08</time><b>INFO</b><span>Analyzing source and available streams</span></p><p><time>14:22:10</time><b class="warn">WARN</b><span>Chromium cookie database is unavailable</span></p><p class="active"><time>14:22:10</time><b>RETRY</b><span>Continuing public media without browser access</span></p><p><time>14:22:12</time><b class="success">READY</b><span>Format choices loaded</span></p></div>
+          <div class="console-status"><i></i> Recovery completed without exposing profile data</div>
+        </div>
+        <div class="standout-copy" data-reveal>
+          <span class="feature-number">RESILIENT BY DESIGN</span><h2>Recovery that protects the work already done.</h2>
+          <p>Pause or stop while keeping supported partial data. Temporary failures retry automatically. If Chrome, Edge, or Brave locks its cookie database during public-media work, dlME retries once without browser access.</p>
+          <ul class="check-list"><li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-9" /></svg>Resume supported partial transfers</li><li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-9" /></svg>Keep authenticated access optional and off by default</li><li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-9" /></svg>Export sanitized diagnostics when a site blocks a job</li></ul>
+        </div>
+      </section>
+
+      <section class="standout section-edge">
+        <div class="standout-copy" data-reveal>
+          <span class="feature-number">FILES THAT STAY YOURS</span><h2>Your library is based on what is actually on disk.</h2>
+          <p>Clearing activity does not erase or hide downloads. dlME scans approved folders directly, then gives you the controls to find, open, and reveal the real files in Windows.</p>
+          <ul class="check-list"><li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-9" /></svg>Search, category, availability, sort, and pagination</li><li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-9" /></svg>Audio, Video, Image, Application, Zip, and Others</li><li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-9" /></svg>Open the file or reveal it in Explorer</li></ul>
+        </div>
+        <figure class="product-art" data-reveal><img src="assets/dlme-local-library.webp" alt="An organized local library of six downloaded media categories" width="1536" height="1024" loading="lazy" /><figcaption><span>FILESYSTEM LIBRARY</span><strong>Organized around the files on disk.</strong></figcaption></figure>
+      </section>
+
+      <section class="workflow section" id="workflow">
+        <div class="section-kicker" data-reveal><span>THE COMPLETE PATH</span><i></i></div>
+        <div class="workflow-heading" data-reveal><h2>One link. Four visible stages.</h2><p>The interface keeps decisions and recovery close to the job instead of hiding them behind a single generic progress state.</p></div>
+        <ol class="download-rail" data-reveal><li><span>01</span><div><small>LINK</small><h3>Analyze the source</h3><p>Paste a public media or playlist URL and load the formats the engine actually reports.</p></div></li><li><span>02</span><div><small>CHOOSE</small><h3>Control the output</h3><p>Select video, audio, playlist items, practical defaults, or an exact source stream.</p></div></li><li><span>03</span><div><small>FOLLOW</small><h3>See the real job</h3><p>Read percentage, bytes, speed, ETA, phase, retries, and sanitized engine messages.</p></div></li><li><span>04</span><div><small>KEEP</small><h3>Verify and organize</h3><p>Inspect the final media, route it into clear folders, and browse it independently of history.</p></div></li></ol>
+      </section>
+
+      <section class="interface-proof section" aria-labelledby="interface-title">
+        <div class="section-kicker" data-reveal><span>THE ACTUAL APP</span><i></i></div>
+        <div class="interface-heading" data-reveal><h2 id="interface-title">Real interface.<br />Natural proportions.</h2><p>These are direct captures from dlME—not generated mockups. Each screen is shown uncropped so the product stays legible and honest.</p></div>
+        <div class="screen-gallery">
+          <figure class="product-screen" data-reveal><div class="screen-bar"><span>Downloader</span><i>LIVE JOB CONTROL</i></div><img src="assets/app-downloader.webp" alt="The real dlME Downloader interface" width="1120" height="760" loading="lazy" /><figcaption>Analyze, choose, follow, and recover.</figcaption></figure>
+          <figure class="product-screen" data-reveal><div class="screen-bar"><span>Files</span><i>LOCAL LIBRARY</i></div><img src="assets/app-files.webp" alt="The real dlME Files browser" width="1120" height="760" loading="lazy" /><figcaption>Browse what is actually on disk.</figcaption></figure>
+          <figure class="product-screen" data-reveal><div class="screen-bar"><span>Supported</span><i>ENGINE DIRECTORY</i></div><img src="assets/app-supported.webp" alt="The real dlME installed-engine extractor directory" width="1120" height="760" loading="lazy" /><figcaption>Inspect the installed engine clearly.</figcaption></figure>
+        </div>
+      </section>
+
+      <section class="engine section-edge">
+        <div class="engine-copy" data-reveal><span class="feature-number">INSTALLED ENGINE DIRECTORY</span><h2>See what the engine knows—without pretending every URL is guaranteed.</h2><p>Search all <strong data-extractors>1,752</strong> extractor entries reported by the bundled yt-dlp engine. Filter by name, type, initial letter, or status, and check for verified engine updates from inside dlME.</p><p class="engine-note"><i></i><span><strong>Transparent by default</strong> Websites, login rules, regions, rate limits, removed media, and anti-bot systems can change independently.</span></p></div>
+        <div class="engine-index" data-reveal aria-label="Installed engine evidence"><div class="engine-index-top"><span><i></i> INSTALLED ENGINE INDEX</span><strong>yt-dlp <b data-engine-version>2026.08.19</b></strong></div><div class="engine-search"><span>Search the installed directory</span><kbd>1,752 entries</kbd></div><dl><div><dt>Directory snapshot</dt><dd><strong data-extractors>1,752</strong><span>extractor entries reported</span></dd></div><div><dt>Update source</dt><dd><strong>Official</strong><span>stable yt-dlp channel</span></dd></div><div><dt>Install gate</dt><dd><strong>SHA-256</strong><span>checksum + version smoke test</span></dd></div></dl><p><i></i> Previous verified engine retained for rollback</p></div>
+      </section>
+
+      <section class="build section" id="build">
+        <div class="section-kicker" data-reveal><span>OPEN ABOUT THE BUILD</span><i></i></div>
+        <div class="build-heading" data-reveal><div><h2>Proof belongs in the open.</h2><p>Source snapshot <strong data-source-version>0.9.1</strong> is tested before this site deploys. Published-release facts come separately from GitHub, so the page stays honest while the next app update is in progress.</p></div><div class="ci-badge"><i></i><span><small>SOURCE DEPLOY GATE</small><strong>Passing</strong></span></div></div>
+        <dl class="stat-grid"><div data-reveal><dt><span data-count="1752">1,752</span></dt><dd>source-engine extractor entries</dd></div><div data-reveal><dt><span data-test-count>32</span> / <span data-test-count>32</span></dt><dd>source behavior tests passing</dd></div><div data-reveal><dt><span data-audit-count>0</span></dt><dd>source npm audit findings</dd></div><div data-reveal><dt><span data-count="2">2</span></dt><dd>published Windows x64 builds</dd></div><div data-reveal><dt><span data-runtime-count>4</span></dt><dd>source checksummed runtimes</dd></div><div data-reveal><dt><span data-count="6">6</span></dt><dd>organized file categories</dd></div><div data-reveal><dt>SHA-256</dt><dd>published release verification</dd></div><div data-reveal><dt><span data-asset-count>10</span></dt><dd>published release assets</dd></div></dl>
+        <div class="build-disclosure" data-reveal><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 21h20L12 3Zm0 6v5m0 3v.1" /></svg><p><strong>Open Beta means public compatibility testing is still underway.</strong> The current Windows executables are unsigned, so Windows may show an unknown-publisher warning. Download only from the official GitHub release and verify <code>SHA256SUMS.txt</code>.</p><a href="https://github.com/YazeKT/dlME#project-quality">Review the evidence <span aria-hidden="true">↗</span></a></div>
+      </section>
+
+      <section class="privacy section-edge">
+        <div class="privacy-mark" data-reveal aria-hidden="true"><img src="assets/dlme-logo.png" alt="" width="96" height="96" /><span></span></div>
+        <div class="privacy-copy" data-reveal><span class="feature-number">LOCAL BY DESIGN</span><h2>No dlME account.<br />No ads. No analytics. No telemetry.</h2><p>Settings, history, logs, remembered folders, partial state, and file records stay on your Windows computer. Network activity is limited to the media operation you request and official engine update endpoints.</p><a href="https://github.com/YazeKT/dlME/blob/main/docs/PRIVACY.md">Read the privacy document <span aria-hidden="true">↗</span></a></div>
+      </section>
+
+      <section class="questions section" id="questions">
+        <div class="section-kicker" data-reveal><span>BEFORE YOU DOWNLOAD</span><i></i></div>
+        <div class="questions-grid"><h2 data-reveal>Direct answers,<br />before the click.</h2><div class="faq-list" data-reveal>
+          <details><summary>Does every listed website always work?<span aria-hidden="true">+</span></summary><p>No. The directory shows extractor code available in the installed engine. Websites, login rules, regional limits, removed media, rate limits, and anti-bot systems can change independently.</p></details>
+          <details><summary>Does dlME bypass DRM or paywalls?<span aria-hidden="true">+</span></summary><p>No. dlME does not bypass DRM, paywalls, access controls, or site challenges. Download only media you own or have permission to save.</p></details>
+          <details><summary>Where does my data go?<span aria-hidden="true">+</span></summary><p>Your settings, history, logs, and file records remain on your computer. Browser-session access is optional and off by default.</p></details>
+          <details><summary>Why does Windows show a warning?<span aria-hidden="true">+</span></summary><p>The Open Beta executables are currently unsigned. Verify the included SHA-256 sums and download only from the official GitHub release.</p></details>
+          <details><summary>Setup or portable—what should I choose?<span aria-hidden="true">+</span></summary><p>Use Setup for a normal Windows installation and shortcuts. Use Portable for a self-contained copy whose profile lives in <code>dlME-data</code> beside the executable.</p></details>
+        </div></div>
+      </section>
+
+      <section class="final-cta">
+        <div data-reveal><div class="final-brand"><img src="assets/dlme-logo.png" alt="" width="52" height="52" /><span>dlME</span></div><h2>Download clearly.<br /><span>Keep locally.</span></h2><p>Windows 10 &amp; 11 · x64 · Open Beta <b data-version>0.9.1</b></p></div>
+        <div class="final-actions" data-reveal><a class="button button-primary" data-release-link href="https://github.com/YazeKT/dlME/releases">Get dlME <span data-version>0.9.1</span> <span aria-hidden="true">↗</span></a><a href="https://github.com/YazeKT/dlME">View the source on GitHub <span aria-hidden="true">↗</span></a><small>Unsigned Open Beta · MIT application source · third-party components keep their own licenses</small></div>
+      </section>
+    </main>
+
+    <footer class="site-footer"><a class="brand" href="#top"><img src="assets/dlme-logo.png" alt="" width="28" height="28" /><span>dlME</span></a><p>Created by Kirsten Trimaley · Published by Yaze Media</p><nav aria-label="Footer navigation"><a href="https://github.com/YazeKT/dlME/blob/main/docs/PRIVACY.md">Privacy</a><a href="https://github.com/YazeKT/dlME/blob/main/docs/LEGAL.md">Legal</a><a href="https://github.com/YazeKT/dlME/issues">Support</a></nav></footer>
+  </body>
+</html>
