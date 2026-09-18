@@ -27,7 +27,7 @@
 
 ## GitHub
 
-- [ ] Release is marked prerelease while dlME is below 1.0.
+- [ ] Release 1.0.0 and later is stable, with all required verification evidence captured.
 - [ ] `SHA256SUMS.txt` covers every uploaded asset.
 - [ ] Uploaded assets match local hashes after re-download.
 - [ ] README and documentation links render correctly.

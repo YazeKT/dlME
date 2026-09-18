@@ -6,10 +6,24 @@ import { detectBrowsers } from './browsers'
 import { DimeDatabase } from './database'
 import { DownloadEngine } from './engine'
 import { EngineUpdater } from './updater'
+import type { TorrentEngine } from './torrents'
 import { assertLibraryPath, ensureDownloadFolders, libraryRoots, scanLibrary } from './library'
 import { importLegalDocument, readLegalDocuments } from './legal'
 
-export function registerIpc(window: BrowserWindow, db: DimeDatabase, engine: DownloadEngine, updater: EngineUpdater): void {
+export function registerIpc(window: BrowserWindow, db: DimeDatabase, engine: DownloadEngine, updater: EngineUpdater, torrents: TorrentEngine): void {
+  const isTorrent = (id: string): boolean => Boolean(db.getJob(assertId(id))?.options.torrent)
+  ipcMain.handle('dime:torrent-inputs', () => torrents.getInputs())
+  ipcMain.handle('dime:torrent-add-input', (_event, source: string) => torrents.addInput(source))
+  ipcMain.handle('dime:torrent-resolve', (_event, id: string) => torrents.resolveInput(assertId(id)))
+  ipcMain.handle('dime:torrent-close', (_event, id: string) => torrents.cancelInput(assertId(id)))
+  ipcMain.handle('dime:torrent-enqueue', (_event, request) => torrents.enqueue(assertObject(request)))
+  ipcMain.handle('dime:torrent-import', async () => { const result = await dialog.showOpenDialog(window, { filters: [{ name: 'Torrent metadata', extensions: ['torrent'] }], properties: ['openFile'] }); return result.canceled ? null : torrents.addInput(result.filePaths[0]) })
+  ipcMain.handle('dime:torrent-association', async (_event, register?: boolean) => {
+    if (register && (!app.isPackaged || process.env.PORTABLE_EXECUTABLE_DIR)) throw new Error('Install dlME to register browser magnet links.')
+    if (register) { app.setAsDefaultProtocolClient('magnet'); await shell.openExternal('ms-settings:defaultapps') }
+    return app.isDefaultProtocolClient('magnet')
+  })
+  ipcMain.handle('dime:torrent-folder', async (_event, id: string) => { const job = db.getJob(assertId(id)); if (!job?.options.torrent) throw new Error('Unknown torrent.'); const error = await shell.openPath(job.options.outputDirectory); if (error) throw new Error(error) })
   ipcMain.handle('dime:app-info', async () => ({ version: app.getVersion(), engineVersion: await engine.version() }))
   ipcMain.handle('dime:supported-sites', () => engine.supportedSites())
   ipcMain.handle('dime:library', () => scanLibrary(db.getSettings().outputDirectory, db.listJobs(), db.getDownloadRoots()))
@@ -18,10 +32,10 @@ export function registerIpc(window: BrowserWindow, db: DimeDatabase, engine: Dow
   ipcMain.handle('dime:open-download-folder', async () => { const root = db.getSettings().outputDirectory; await ensureDownloadFolders(root); const error = await shell.openPath(root); if (error) throw new Error(error) })
   ipcMain.handle('dime:analyze', (_event, request: AnalyzeRequest) => engine.analyze(assertObject(request)))
   ipcMain.handle('dime:enqueue', (_event, request: EnqueueRequest) => engine.enqueue(assertObject(request)))
-  ipcMain.handle('dime:pause', (_event, id: string) => engine.pause(assertId(id)))
-  ipcMain.handle('dime:resume', (_event, id: string) => engine.resume(assertId(id)))
-  ipcMain.handle('dime:cancel', (_event, id: string) => engine.cancel(assertId(id)))
-  ipcMain.handle('dime:retry', (_event, id: string) => engine.retry(assertId(id)))
+  ipcMain.handle('dime:pause', (_event, id: string) => isTorrent(id) ? torrents.pause(id) : engine.pause(assertId(id)))
+  ipcMain.handle('dime:resume', (_event, id: string) => isTorrent(id) ? torrents.resume(id) : engine.resume(assertId(id)))
+  ipcMain.handle('dime:cancel', (_event, id: string) => isTorrent(id) ? torrents.pause(id, true) : engine.cancel(assertId(id)))
+  ipcMain.handle('dime:retry', (_event, id: string) => isTorrent(id) ? torrents.resume(id) : engine.retry(assertId(id)))
   ipcMain.handle('dime:select-folder', async () => {
     const result = await dialog.showOpenDialog(window, { properties: ['openDirectory', 'createDirectory'], defaultPath: db.getSettings().outputDirectory })
     return result.canceled ? null : result.filePaths[0]

@@ -48,9 +48,24 @@ for (const name of ['ffmpeg.exe', 'ffprobe.exe']) {
 await rm(ffmpegExpanded, { recursive: true, force: true })
 await rm(ffmpegZipPath, { force: true })
 
+const aria2Url = 'https://github.com/aria2/aria2/releases/download/release-1.37.0/aria2-1.37.0-win-64bit-build1.zip'
+const aria2Checksum = '67d015301eef0b612191212d564c5bb0a14b5b9c4796b76454276a4d28d9b288'
+const aria2Zip = await download(aria2Url)
+verify(aria2Zip, aria2Checksum, 'aria2 archive')
+const aria2Archive = resolve(destination, 'aria2.zip')
+const aria2Expanded = resolve(destination, 'aria2-expanded')
+await writeFile(aria2Archive, aria2Zip)
+expand(aria2Archive, aria2Expanded)
+await copyFile(await findFile(aria2Expanded, 'aria2c.exe'), resolve(destination, 'aria2c.exe'))
+await mkdir(resolve('resources/licenses'), { recursive: true })
+for (const name of ['COPYING', 'LICENSE.OpenSSL', 'README.mingw', 'AUTHORS']) await copyFile(await findFile(aria2Expanded, name), resolve('resources/licenses', `aria2-${name}.txt`))
+await rm(aria2Archive, { force: true })
+await rm(aria2Expanded, { recursive: true, force: true })
+
 const manifest = {
   release,
   generatedAt: new Date().toISOString(),
+  aria2: { version: '1.37.0', archiveSha256: aria2Checksum, sha256: createHash('sha256').update(await readFile(resolve(destination, 'aria2c.exe'))).digest('hex'), url: aria2Url, source: 'https://github.com/aria2/aria2/releases/download/release-1.37.0/aria2-1.37.0.tar.xz', buildRecipes: 'https://github.com/aria2/aria2/blob/release-1.37.0/README.mingw', license: 'GPL-2.0-or-later' },
   ytDlp: { version: versions.ytDlp, sha256: expected.ytDlpExe, url: ytUrl, source: `https://github.com/yt-dlp/yt-dlp/tree/${versions.ytDlp}` },
   deno: { version: versions.deno, archiveSha256: expected.denoZip, url: denoUrl, source: `https://github.com/denoland/deno/tree/${versions.deno}` },
   ffmpeg: {

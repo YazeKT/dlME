@@ -14,7 +14,7 @@ Video defaults to MP4. dlME may merge or convert streams with FFmpeg, then check
 
 The activity area shows information reported by yt-dlp and dlME. Progress, speed, ETA, retries, and log lines are live values. A remote server can stop responding or change its behavior at any time.
 
-**Stop & keep partial** stops the process and retains supported partial files. **Reset form** clears the current inputs; it does not delete completed downloads.
+**Pause** stops the transfer and preserves supported partial files. **Cancel** removes it from the queue and follows the retention preference. **Reset form** clears the current inputs; it does not delete completed downloads.
 
 ## Browser sessions
 
@@ -31,3 +31,19 @@ Supported displays the extractor directory reported by the installed yt-dlp engi
 ## About and legal documents
 
 About shows the dlME version, changelog, bundled notices, and locally imported Markdown or text documents. Imported documents are copied to the local profile and are not uploaded by dlME.
+
+## Download torrents
+
+Install dlME and select **Make dlME my default torrent app**. If Windows still uses another client, choose dlME for MAGNET and `.torrent` in Windows Default apps. Browser prompts are controlled by the browser.
+
+Click a browser magnet, paste it into Torrents, import or double-click a `.torrent`, or drag a torrent file into Torrents. Add Torrent resolves metadata without downloading payloads. Choose destination and files, then Download. All file categories are supported; torrent content is never converted or automatically executed.
+
+Pause preserves pieces; Resume checks and continues them. Cancel stops scheduling. Unavailable peers show Waiting for peers. Transfers stop at completion; uploading can occur while downloading. Open Folder opens the destination. Clearing history does not delete files. Pure v2 is unsupported.
+
+## Best audio, sounds, and terminal
+
+New audio downloads use Original / Best and Best quality. MP3, M4A, Opus, and WAV remain available. Existing saved output preferences are preserved.
+
+The speaker toggle and Settings → Mute app sounds silence active and future completions immediately. Visual notifications are controlled separately.
+
+Terminal height and Expand enlarge logs. Export saves sanitized diagnostics. Queues and torrent file lists use pagination.

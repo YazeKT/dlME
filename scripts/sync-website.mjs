@@ -35,11 +35,13 @@ const auditFindings = auditResults?.metadata?.vulnerabilities
   : 0
 
 const data = {
-  version: publishedRelease?.tag_name?.replace(/^v/, '') ?? pkg.version,
+  version: pkg.version,
+  publishedVersion: publishedRelease?.tag_name?.replace(/^v/, '') ?? null,
+  releaseReady: publishedRelease?.tag_name === `v${pkg.version}`,
   sourceVersion: pkg.version,
   engineVersion: runtimes.ytDlp.version,
   extractorEntries: 1752,
-  testCount: testResults?.numPassedTests ?? 32,
+  testCount: testResults?.numPassedTests ?? 50,
   auditFindings,
   runtimeCount: Object.keys(runtimes.binaryChecksums).length,
   releaseAssetCount: publishedRelease?.assets?.length ?? 10,

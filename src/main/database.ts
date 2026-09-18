@@ -88,7 +88,7 @@ export class DimeDatabase {
       browserAccess: { enabled: false },
       defaultQuality: '1080',
       defaultVideoContainer: 'mp4',
-      defaultAudioContainer: 'mp3',
+      defaultAudioContainer: 'best',
       retryLimit: 3,
       connectionTimeout: 30,
       concurrentFragments: 4,

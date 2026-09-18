@@ -6,7 +6,7 @@ Check that FFmpeg and FFprobe are available in Settings, update yt-dlp, and retr
 
 ## Chrome cookie database could not be copied or decrypted
 
-dlME 0.9.1 automatically retries public media once without browser access. For media that requires an account, fully exit Chrome, Edge, or Brave, including background processes, then select Retry. If the profile remains unavailable, use a signed-in Firefox profile. Windows can lock or restrict Chromium cookie databases while the browser is running.
+dlME 1.0.0 automatically retries public media once without browser access. For media that requires an account, fully exit Chrome, Edge, or Brave, including background processes, then select Retry. If the profile remains unavailable, use a signed-in Firefox profile. Windows can lock or restrict Chromium cookie databases while the browser is running.
 
 ## Site challenge or access denied
 

@@ -25,3 +25,7 @@ Users can clear history from the app, remove logs and imported legal documents f
 Websites contacted for downloads apply their own privacy terms. GitHub applies its terms to release and update-check requests. Yaze Media does not control those services.
 
 Questions can be raised through the repository's GitHub issue tracker without posting cookies, private URLs, credentials, or personal media.
+
+## Torrent network activity
+
+Torrents contact supplied trackers, DHT nodes, and peers. Other participants can observe connection IP addresses; dlME does not provide anonymity. Pieces can be uploaded during downloading. Metadata and resume data stay in the local profile. Engine RPC binds to loopback with a per-session secret.

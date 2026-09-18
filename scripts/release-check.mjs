@@ -14,10 +14,11 @@ const required = [
 ]
 const errors = []
 for (const file of required) if (!existsSync(resolve(root, file))) errors.push(`Missing required file: ${file}`)
-if (pkg.name !== 'dlme' || !/^0\.\d+\.\d+$/.test(pkg.version) || pkg.license !== 'MIT' || pkg.private !== true) errors.push('package.json release identity is inconsistent')
+if (pkg.name !== 'dlme' || !/^\d+\.\d+\.\d+$/.test(pkg.version) || pkg.license !== 'MIT' || pkg.private !== true) errors.push('package.json release identity is inconsistent')
 
 const manifest = JSON.parse(await readFile(resolve(root, 'resources/engine/runtime-manifest.json'), 'utf8'))
 const expectedBinaries = {
+  'aria2c.exe': manifest.aria2?.sha256,
   'yt-dlp.exe': manifest.ytDlp.sha256,
   'ffmpeg.exe': manifest.binaryChecksums?.['ffmpeg.exe'],
   'ffprobe.exe': manifest.binaryChecksums?.['ffprobe.exe'],
@@ -25,7 +26,7 @@ const expectedBinaries = {
 }
 for (const [name, expected] of Object.entries(expectedBinaries)) {
   const path = resolve(root, 'resources/engine', name)
-  if (!existsSync(path) || !expected) continue
+  if (!existsSync(path) || !expected) { errors.push(`${name} or its pinned checksum is missing`); continue }
   const actual = createHash('sha256').update(await readFile(path)).digest('hex')
   if (actual !== expected) errors.push(`${name} does not match runtime-manifest.json`)
 }

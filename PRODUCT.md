@@ -12,7 +12,7 @@ Windows users who have permission to save online video, audio, or playlists and 
 
 ## Product Purpose
 
-dlME is a focused Windows media downloader. It analyzes a URL, exposes practical video and audio choices, reports the real download job, validates completed media, and keeps files browsable on the user's computer.
+dlME is a focused Windows media and torrent downloader. It analyzes a URL, exposes practical video and audio choices, reports the real download job, validates completed media, and keeps files browsable on the user's computer.
 
 ## Positioning
 
@@ -31,7 +31,7 @@ Users paste public or account-authorized media URLs, choose video or audio outpu
 - Files are organized into Audio, Video, Image, Application, Zip, and Others categories.
 - The Supported directory reports extractor entries from the installed yt-dlp engine; it does not guarantee that every URL works.
 - dlME does not bypass DRM, paywalls, access controls, regional restrictions, or site challenges.
-- The current Open Beta Windows executables are unsigned.
+- The current Windows executables are unsigned.
 
 ## Brand Commitments
 
@@ -60,3 +60,7 @@ Users paste public or account-authorized media URLs, choose video or audio outpu
 ## Accessibility & Inclusion
 
 The product website must remain keyboard accessible, readable at narrow widths, high contrast in dark mode, and fully understandable with reduced motion enabled.
+
+## Stable torrent capability
+
+Arbitrary payload categories, original structure, browser magnet handoff, file selection, resume, and piece verification. No advertising, promoted-game feed, or embedded player. Installed associations are separate from portable use.

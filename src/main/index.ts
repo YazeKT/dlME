@@ -6,11 +6,23 @@ import { DownloadEngine } from './engine'
 import { registerIpc } from './ipc'
 import { EngineUpdater } from './updater'
 import { ensureDownloadFolders } from './library'
+import { TorrentEngine } from './torrents'
 
 let mainWindow: BrowserWindow | null = null
 let tray: Tray | null = null
 let quitting = false
-
+let torrentEngine: TorrentEngine | undefined
+let mediaEngine: DownloadEngine | undefined
+const externalInputs: string[] = []
+function receiveInputs(args: string[], cwd = process.cwd()): void {
+  for (const argument of args) {
+    if (/^magnet:/i.test(argument) || /\.torrent$/i.test(argument)) {
+      const source = /^magnet:/i.test(argument) ? argument : resolve(cwd, argument)
+      if (torrentEngine) void torrentEngine.addInput(source).catch((error) => dialog.showErrorBox('Could not add torrent', error.message))
+      else if (!externalInputs.includes(source)) externalInputs.push(source)
+    }
+  }
+}
 // electron-builder sets this to the directory containing the portable executable.
 // Keeping userData there makes portable dlME genuinely self-contained.
 if (process.env.DLME_TEST_DATA) app.setPath('userData', resolve(process.env.DLME_TEST_DATA))
@@ -19,6 +31,15 @@ else app.setPath('userData', join(app.getPath('appData'), 'dime-downloader'))
 
 app.setName('dlME')
 app.setAppUserModelId('com.dime.downloader')
+
+const primaryInstance = app.requestSingleInstanceLock()
+if (!primaryInstance) app.quit()
+else {
+  receiveInputs(process.argv.slice(1))
+  app.on('second-instance', (_event, args, cwd) => { receiveInputs(args, cwd); mainWindow?.show(); if (mainWindow?.isMinimized()) mainWindow.restore(); mainWindow?.focus() })
+}
+
+
 
 async function createWindow(): Promise<void> {
   const iconPath = app.isPackaged ? join(process.resourcesPath, 'branding', 'diME.png') : resolve(app.getAppPath(), 'resources', 'branding', 'diME.png')
@@ -44,11 +65,16 @@ async function createWindow(): Promise<void> {
   const notifyLog = (entry: unknown): void => { if (!mainWindow?.isDestroyed()) mainWindow?.webContents.send('dime:log', entry) }
   const engine = new DownloadEngine(db, notifyJob, notifyLog)
   const updater = new EngineUpdater(db, () => engine.version(), (message) => mainWindow?.webContents.send('dime:engine-update', message))
-  registerIpc(mainWindow, db, engine, updater)
+  mediaEngine = engine
+  const torrents = new TorrentEngine(db, notifyJob, (input) => { if (!mainWindow?.isDestroyed()) mainWindow?.webContents.send('dime:torrent-input', input) }, notifyLog, () => engine.wake())
+  torrentEngine = torrents
+  engine.externalActiveCount = () => torrents.activeCount()
+  registerIpc(mainWindow, db, engine, updater, torrents)
+  for (const source of externalInputs.splice(0)) await torrents.addInput(source).catch((error) => writeCrashLog(`External torrent rejected: ${error.message}`))
   app.setLoginItemSettings({ openAtLogin: db.getSettings().launchAtStartup })
 
   mainWindow.on('close', async (event) => {
-    if (quitting || !engine.hasActiveJobs()) return
+    if (quitting || (!engine.hasActiveJobs() && !torrents.hasActiveJobs())) return
     event.preventDefault()
     const result = await dialog.showMessageBox(mainWindow!, {
       type: 'question', title: 'Downloads are still running', message: 'Keep dlME running in the background?',
@@ -56,7 +82,7 @@ async function createWindow(): Promise<void> {
       buttons: ['Keep Running', 'Stop & Exit', 'Cancel'], defaultId: 0, cancelId: 2, noLink: true
     })
     if (result.response === 0) { mainWindow?.hide(); ensureTray(iconPath, engine) }
-    else if (result.response === 1) { await engine.shutdown(); quitting = true; app.quit() }
+    else if (result.response === 1) { await Promise.all([engine.shutdown(), torrents.shutdown()]); quitting = true; app.quit() }
   })
   mainWindow.on('closed', () => { mainWindow = null })
   mainWindow.once('ready-to-show', () => mainWindow?.show())
@@ -77,12 +103,12 @@ function ensureTray(iconPath: string, engine: DownloadEngine): void {
   tray.setContextMenu(Menu.buildFromTemplate([
     { label: 'Open dlME', click: () => { mainWindow?.show(); mainWindow?.focus() } },
     { type: 'separator' },
-    { label: 'Exit', click: () => { void engine.shutdown().then(() => { quitting = true; app.quit() }) } }
+    { label: 'Exit', click: () => { void Promise.all([engine.shutdown(), torrentEngine?.shutdown()]).then(() => { quitting = true; app.quit() }) } }
   ]))
   tray.on('double-click', () => { mainWindow?.show(); mainWindow?.focus() })
 }
 
-app.whenReady().then(async () => {
+if (primaryInstance) app.whenReady().then(async () => {
   await createWindow()
   app.on('activate', () => { if (!mainWindow) void createWindow(); else mainWindow.show() })
 }).catch((error) => {
@@ -91,7 +117,11 @@ app.whenReady().then(async () => {
   app.quit()
 })
 
-app.on('before-quit', () => { quitting = true })
+app.on('before-quit', (event) => {
+  if (quitting) return
+  event.preventDefault(); quitting = true
+  void Promise.all([mediaEngine?.shutdown(), torrentEngine?.shutdown()]).then(() => app.quit()).catch((error) => { quitting = false; dialog.showErrorBox('Could not stop downloads', error.message) })
+})
 app.on('window-all-closed', () => { if (process.platform !== 'darwin' && !tray) app.quit() })
 app.on('child-process-gone', (_event, details) => writeCrashLog(`Child process stopped: ${details.type} ${details.reason} (${details.exitCode})`))
 

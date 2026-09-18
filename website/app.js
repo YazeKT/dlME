@@ -1,11 +1,11 @@
 const siteData = {
-  version: '0.9.1',
-  sourceVersion: '0.9.1',
+  version: '1.0.0',
+  sourceVersion: '1.0.0',
   engineVersion: '2026.08.19',
   extractorEntries: 1752,
-  testCount: 32,
+  testCount: 50,
   auditFindings: 0,
-  runtimeCount: 4,
+  runtimeCount: 5,
   releaseAssetCount: 10,
   releaseUrl: 'https://github.com/YazeKT/dlME/releases',
   ...(window.DLME_SITE_DATA ?? {})

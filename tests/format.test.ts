@@ -5,6 +5,9 @@ import type { DownloadOptions } from '../src/shared/types'
 const base: DownloadOptions = { kind: 'video', quality: '1080', videoContainer: 'auto', audioContainer: 'mp3', audioQuality: '192', outputDirectory: 'C:\\Downloads' }
 
 describe('format selection', () => {
+  it('pairs an exact video-only stream with audio', () => expect(buildFormatArguments({ ...base, exactFormatId: '137', exactFormatKind: 'video' })[1]).toBe('137+bestaudio'))
+  it('uses highest encoder quality for Best MP3', () => expect(buildFormatArguments({ ...base, kind: 'audio', audioContainer: 'mp3', audioQuality: 'best' })).toContain('0'))
+  it('does not force bitrate when preserving original audio', () => expect(buildFormatArguments({ ...base, kind: 'audio', audioContainer: 'best', audioQuality: 'best' })).not.toContain('--audio-quality'))
   it('caps video quality and keeps safe fallback streams', () => {
     expect(buildFormatArguments(base)).toEqual(['--format', 'bestvideo*[height<=1080]+bestaudio/best[height<=1080]/best'])
   })

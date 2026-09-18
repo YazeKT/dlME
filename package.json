@@ -1,7 +1,7 @@
 {
   "name": "dlme",
-  "version": "0.9.1",
-  "description": "dlME - Windows media downloader",
+  "version": "1.0.0",
+  "description": "dlME - Windows media and torrent downloader",
   "main": "out/main/index.js",
   "author": "Yaze Media",
   "license": "MIT",
@@ -29,7 +29,9 @@
     "licenses": "node scripts/generate-notices.mjs",
     "release:check": "node scripts/release-check.mjs",
     "release:source": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-corresponding-source.ps1",
-    "website:sync": "node scripts/sync-website.mjs"
+    "website:sync": "node scripts/sync-website.mjs",
+    "smoke:stable": "node scripts/smoke-stable.mjs",
+    "smoke:media": "node scripts/smoke-media-controls.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "2.1.10",
@@ -61,7 +63,7 @@
       "resources/engine/**"
     ],
     "directories": {
-      "output": "release/0.9.1"
+      "output": "release/1.0.0"
     },
     "files": [
       "out/**",
@@ -110,7 +112,15 @@
     },
     "portable": {
       "artifactName": "dlME-Portable-${version}-${arch}.${ext}"
-    }
+    },
+    "protocols": [
+      {
+        "name": "BitTorrent Magnet",
+        "schemes": [
+          "magnet"
+        ]
+      }
+    ]
   },
   "allowScripts": {
     "better-sqlite3@13.0.3": true,

@@ -5,19 +5,19 @@
 <h1 align="center">dlME</h1>
 
 <p align="center">
-  A focused Windows media downloader with verified MP4 output, live engine feedback,<br>
+  A focused Windows media and torrent downloader with verified MP4 output, live engine feedback,<br>
   a searchable site directory, and a file library that stays on your computer.
 </p>
 
 <p align="center">
   <a href="https://github.com/YazeKT/dlME/actions/workflows/ci.yml"><img alt="Windows CI" src="https://github.com/YazeKT/dlME/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="https://github.com/YazeKT/dlME/releases"><img alt="Open Beta 0.9.1" src="https://img.shields.io/badge/release-0.9.1%20Open%20Beta-00e6a0"></a>
+  <a href="https://github.com/YazeKT/dlME/releases"><img alt="Stable 1.0.0" src="https://img.shields.io/badge/release-1.0.0%20Stable-00e6a0"></a>
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-1b2521"></a>
   <img alt="Windows 10 and 11" src="https://img.shields.io/badge/Windows-10%20%7C%2011-087cd5">
 </p>
 
 <p align="center">
-  <strong>Production-ready code, released as an open beta while public compatibility testing continues.</strong>
+  <strong>Media and torrent downloads with verified output and accountable controls.</strong>
 </p>
 
 ---
@@ -26,14 +26,16 @@
 
 ## Download
 
+**dlME 1.0.0 Stable** is the current Windows release. It replaces the earlier Open Beta downloads.
+
 Get the Windows installer or portable build from **[GitHub Releases](https://github.com/YazeKT/dlME/releases)**.
 
 | Build | Best for | Data location |
 | --- | --- | --- |
 | **Setup x64** | Normal Windows installation and shortcuts | Windows application-data folder |
-| **Portable x64** | USB drives and self-contained use | `dlME-data` beside the executable |
+| **Portable x64** | USB drives and self-contained use | `diME-data` beside the executable |
 
-dlME 0.9.1 is an unsigned Open Beta. Verify the downloaded file against `SHA256SUMS.txt`; Windows may display an unknown-publisher warning.
+dlME 1.0.0 is an unsigned stable release. Verify the downloaded file against `SHA256SUMS.txt`; Windows may display an unknown-publisher warning.
 
 ## Designed around the complete download workflow
 
@@ -41,6 +43,7 @@ dlME 0.9.1 is an unsigned Open Beta. Verify the downloaded file against `SHA256S
 | --- | --- | --- |
 | Analyze a URL or playlist, choose video or audio, and follow real engine output. | New files are routed into Audio, Video, Image, Application, Zip, and Others. | Browse the filesystem with search, filters, sorting, availability, and pagination. |
 
+- **Functional torrents:** click browser magnets in installed dlME, choose files, and download any file category without ads or embedded playback.
 - **Verified media:** video defaults to MP4 and FFprobe checks the final container and playable streams.
 - **Truthful activity:** progress, speed, ETA, retries, and log messages come from the running job.
 - **Safe recovery:** Stop & keep partial preserves supported transfer data for a later retry.
@@ -64,7 +67,7 @@ dlME 0.9.1 is an unsigned Open Beta. Verify the downloaded file against `SHA256S
 
 The Supported page comes from `yt-dlp --list-extractors`. It describes available extractor code; it does not promise that every URL will work. Websites can change independently, and login rules, regional limits, rate limits, anti-bot systems, removed media, and DRM still apply.
 
-dlME does not bypass DRM, paywalls, access controls, or site challenges. Download only media you own or have permission to save.
+dlME does not bypass DRM, paywalls, access controls, or site challenges. Download only files you own or have permission to save.
 
 ## Build from source
 
@@ -95,10 +98,10 @@ Runtime downloads are release-pinned and SHA-256 verified. The renderer is sandb
 
 ## Project quality
 
-- 32 automated behavior tests
+- 50 automated behavior tests
 - TypeScript strict mode
 - Clean Windows CI build from `npm ci`
-- Zero known npm audit findings at the 0.9.1 source tag
+- Zero production npm audit findings in local 1.0.0 verification
 - Canonical-path checks for file open and reveal actions
 - FFprobe validation before successful media completion
 - Pinned runtime origins, versions, and hashes

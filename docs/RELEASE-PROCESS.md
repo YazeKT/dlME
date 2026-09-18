@@ -9,7 +9,7 @@
 7. Generate `SHA256SUMS.txt` for every release asset.
 8. Verify installer, portable data behavior, and uninstall data preservation.
 9. Tag the exact tested source commit.
-10. Create a GitHub prerelease and upload executables, checksums, SBOM/license report, and corresponding source.
+10. Create a GitHub stable release for 1.0.0 and later and upload executables, checksums, SBOM/license report, and corresponding source.
 11. Download the uploaded assets and verify their checksums again.
 
 Do not move a draft to public release if required source, license texts, hashes, or build instructions are missing.

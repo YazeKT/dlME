@@ -35,3 +35,7 @@ Electron 44.1.0 is MIT-licensed. Electron and Chromium license texts are include
 ## Corresponding source
 
 Every public binary release that contains GPL-covered engines must include matching source and build materials in the same GitHub Release. A tag, upstream link, license text, or source snapshot for a different version is not a substitute for the matching source package.
+
+## aria2 1.37.0
+
+The official Windows x64 build is GPL-2.0-or-later and runs as a separate process. Bundled COPYING, AUTHORS, Windows build notes, and OpenSSL license/exception material are in `resources/licenses/aria2-*`. Build notes identify static GMP 6.3.0, Expat 2.5.0, SQLite 3.43.1, zlib 1.3, c-ares 1.19.1, and libssh2 1.11.0. The source fetcher and corresponding-source builder include matching sources and available build materials. Components retain their own licenses.

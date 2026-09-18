@@ -54,6 +54,9 @@ export interface BrowserAccess {
 }
 
 export interface DownloadOptions {
+  torrent?: TorrentDetails
+  sourceHasAudio?: boolean
+  exactFormatKind?: 'video' | 'audio' | 'combined'
   kind: MediaKind
   quality: 'best' | '4320' | '2160' | '1440' | '1080' | '720' | '480' | '360' | '240' | '144'
   videoContainer: VideoContainer
@@ -71,6 +74,10 @@ export interface EnqueueRequest {
 }
 
 export interface JobProgress {
+  indeterminate?: boolean
+  uploadSpeed?: number
+  peers?: number
+  seeders?: number
   percent: number
   downloadedBytes?: number
   totalBytes?: number
@@ -144,6 +151,16 @@ export interface EngineUpdateInfo {
 }
 
 export interface DimeApi {
+  getDroppedTorrentPath(file: File): string
+  importTorrent(): Promise<TorrentInput | null>
+  addTorrentInput(source: string): Promise<TorrentInput>
+  getTorrentInputs(): Promise<TorrentInput[]>
+  resolveTorrent(id: string): Promise<TorrentInput>
+  cancelTorrentInput(id: string): Promise<void>
+  enqueueTorrent(request: { id: string; files: number[]; destination: string }): Promise<JobRecord>
+  torrentAssociation(register?: boolean): Promise<boolean>
+  openTorrentFolder(id: string): Promise<void>
+  onTorrentInput(callback: (input: TorrentInput) => void): () => void
   getAppInfo(): Promise<{ version: string; engineVersion: string }>
   getSupportedSites(): Promise<SupportedDirectory>
   listDownloadedFiles(): Promise<FileLibrary>
@@ -181,6 +198,10 @@ export interface DimeApi {
   onLog(callback: (entry: DimeLogEntry) => void): () => void
   onEngineUpdate(callback: (message: string) => void): () => void
 }
+
+export interface TorrentFile { index: number; path: string; length: number; completed?: number; selected?: boolean }
+export interface TorrentDetails { infoHash: string; files: TorrentFile[]; metadataPath: string; trackers?: string[] }
+export interface TorrentInput { id: string; source: string; name: string; status: 'pending' | 'resolving' | 'ready' | 'error'; error?: string; details?: TorrentDetails }
 
 export type FileCategory = 'Audio' | 'Video' | 'Image' | 'Application' | 'Zip' | 'Others'
 export interface DownloadedFile { path: string; name: string; category: FileCategory; extension: string; size: number; modifiedAt: string; folder: string; missing: boolean }

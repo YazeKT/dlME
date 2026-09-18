@@ -9,7 +9,7 @@ for (const [category, values] of Object.entries({ Audio: 'mp3 m4a aac opus ogg o
 }
 export function categoryFor(path: string): FileCategory { return extensions[extname(path).slice(1).toLowerCase()] ?? 'Others' }
 export function isWithin(root: string, path: string): boolean { const rel = relative(resolve(root), resolve(path)); return rel !== '' && rel !== '..' && !rel.startsWith(`..${process.platform === 'win32' ? '\\' : '/'}`) && !isAbsolute(rel) }
-export async function ensureDownloadFolders(root: string): Promise<void> { await Promise.all(categories.map((category) => mkdir(join(resolve(root), category), { recursive: true }))) }
+export async function ensureDownloadFolders(root: string): Promise<void> { await Promise.all([...categories, 'Torrents'].map((category) => mkdir(join(resolve(root), category), { recursive: true }))) }
 
 // A renderer can open only a real file inside a configured/recorded output root.
 // Canonical paths prevent junctions and symlinks from escaping that boundary.
@@ -43,11 +43,13 @@ export async function scanLibrary(root: string, jobs: JobRecord[], rememberedRoo
     try {
       for (const entry of await readdir(directory, { withFileTypes: true })) {
         if (++count > 100_000) { warnings.push('Scan limit reached; narrow your download folder.'); break }
-        if (entry.isSymbolicLink() || entry.name.startsWith('.') || /\.(part|ytdl|tmp|temp)$/i.test(entry.name)) continue
+        if (entry.isSymbolicLink() || entry.name.startsWith('.') || /\.(part|ytdl|tmp|temp|aria2|torrent)$/i.test(entry.name)) continue
         const path = join(directory, entry.name)
         if (entry.isDirectory()) { await walk(path, depth + 1); continue }
         if (!entry.isFile()) continue
         try {
+          const incomplete = jobs.some((job) => job.options.torrent && job.options.torrent.files.some((file) => resolve(job.options.outputDirectory, file.path) === resolve(path) && (!file.selected || job.state !== 'completed')))
+          if (incomplete) continue
           const stat = await lstat(path)
           files.set(resolve(path), { path, name: entry.name, category: categoryFor(path), extension: extname(path).slice(1).toUpperCase() || '—', size: stat.size, modifiedAt: stat.mtime.toISOString(), folder: directory, missing: false })
         } catch { warnings.push(`Could not read: ${entry.name}`) }

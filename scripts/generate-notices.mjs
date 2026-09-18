@@ -23,10 +23,11 @@ await writeFile(resolve(destination, 'APPLICATION-DEPENDENCIES.txt'), sections.j
 await copyFile('node_modules/electron/dist/LICENSE', resolve(destination, 'Electron-LICENSE.txt'))
 await copyFile('node_modules/electron/dist/LICENSES.chromium.html', resolve(destination, 'Electron-Chromium-LICENSES.html'))
 const manifest = JSON.parse(await readFile('resources/engine/runtime-manifest.json', 'utf8'))
+manifest.release = JSON.parse(await readFile('package.json', 'utf8')).version
 manifest.ffmpeg.configureOutput = execFileSync(resolve('resources/engine/ffmpeg.exe'), ['-version'], { windowsHide: true, encoding: 'utf8' })
 manifest.ffmpeg.license = 'GPL-3.0-or-later (GPL and version3 enabled)'
 manifest.binaryChecksums = {}
-for (const name of ['yt-dlp.exe', 'ffmpeg.exe', 'ffprobe.exe', 'deno.exe']) manifest.binaryChecksums[name] = createHash('sha256').update(await readFile(resolve('resources/engine', name))).digest('hex')
+for (const name of ['yt-dlp.exe', 'ffmpeg.exe', 'ffprobe.exe', 'deno.exe', 'aria2c.exe']) manifest.binaryChecksums[name] = createHash('sha256').update(await readFile(resolve('resources/engine', name))).digest('hex')
 await writeFile('resources/engine/runtime-manifest.json', JSON.stringify(manifest, null, 2) + '\n')
 await writeFile(resolve(destination, 'RUNTIME-BUILD-DETAILS.txt'), JSON.stringify(manifest, null, 2) + '\n')
 console.log(JSON.stringify({ productionPackages: sections.filter((s) => s.startsWith('## ')).length, packagesWithoutLicenseFile: missing }))

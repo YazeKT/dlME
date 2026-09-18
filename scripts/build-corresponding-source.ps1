@@ -28,14 +28,15 @@ New-Item -ItemType Directory -Force -Path $downloads | Out-Null
 
 $items = @(
   @{ Name = 'yt-dlp-2026.08.19.tar.gz'; Url = 'https://github.com/yt-dlp/yt-dlp/releases/download/2026.08.19/yt-dlp.tar.gz'; Sha256 = '072aad4f2a7604e92155f61a275a4752dc64046c8f6d90df3710525d94cd37c1' },
-  @{ Name = 'FFmpeg-089a48eb36.zip'; Url = 'https://github.com/FFmpeg/FFmpeg/archive/089a48eb36.zip'; Sha256 = '' },
-  @{ Name = 'FFmpeg-Builds-ea2ec3c0e0dfb11069729b7df5cb234bb2145956.zip'; Url = 'https://github.com/yt-dlp/FFmpeg-Builds/archive/ea2ec3c0e0dfb11069729b7df5cb234bb2145956.zip'; Sha256 = '' }
+  @{ Name = 'FFmpeg-089a48eb36.zip'; Url = 'https://github.com/FFmpeg/FFmpeg/archive/089a48eb36.zip'; Sha256 = '1546a9ef7e9c8c5edbe4dde8495ab55c467380785e15c1773b908335b2ace5c8' },
+  @{ Name = 'FFmpeg-Builds-ea2ec3c0e0dfb11069729b7df5cb234bb2145956.zip'; Url = 'https://github.com/yt-dlp/FFmpeg-Builds/archive/ea2ec3c0e0dfb11069729b7df5cb234bb2145956.zip'; Sha256 = '0bbeb918d3dd9b52e4fd65d41d8d1afc3016953073fb12dbbcabc235d6f897e9' }
 )
 
 $manifest = @()
 foreach ($item in $items) {
   $target = Join-Path $downloads $item.Name
-  Invoke-WebRequest -UseBasicParsing -Uri $item.Url -OutFile $target
+  $cachedSource = Get-ChildItem -LiteralPath $OutputRoot -Directory -Filter 'dlME-*-corresponding-source' | ForEach-Object { Join-Path $_.FullName ('upstream-source/' + $item.Name) } | Where-Object { (Test-Path -LiteralPath $_) -and $_ -ne $target -and (Get-Sha256 $_) -eq $item.Sha256 } | Select-Object -First 1
+  if ($cachedSource) { Copy-Item -LiteralPath $cachedSource -Destination $target } else { Invoke-WebRequest -UseBasicParsing -Uri $item.Url -OutFile $target }
   $hash = Get-Sha256 $target
   if ($item.Sha256 -and $hash -ne $item.Sha256) { throw "Checksum mismatch for $($item.Name)" }
   $manifest += [pscustomobject]@{ file = "upstream-source/$($item.Name)"; sha256 = $hash; source = $item.Url }
@@ -76,6 +77,21 @@ if ($hasLocalArtifact) {
 Copy-Item -LiteralPath 'resources\licenses\GPL-3.0.txt' -Destination $packageRoot -Force
 Copy-Item -LiteralPath 'resources\licenses\yt-dlp-THIRD-PARTY-LICENSES.txt' -Destination $packageRoot -Force
 Copy-Item -LiteralPath 'resources\licenses\RUNTIME-BUILD-DETAILS.txt' -Destination $packageRoot -Force
+# Include the matching torrent engine and its documented static dependencies.
+$aria2Sources = Join-Path $downloads 'aria2'
+node scripts/fetch-aria2-sources.mjs $aria2Sources
+if ($LASTEXITCODE -ne 0) { throw 'aria2 corresponding sources could not be verified. Binary publication remains blocked.' }
+$aria2Manifest = Get-Content -LiteralPath (Join-Path $aria2Sources 'SOURCE-MANIFEST.json') -Raw | ConvertFrom-Json
+foreach ($entry in $aria2Manifest) { $manifest += [pscustomobject]@{ file = "upstream-source/aria2/$($entry.file)"; sha256 = $entry.sha256; source = $entry.source } }
+Get-ChildItem -LiteralPath 'resources/licenses' -Filter 'aria2-*' -File | ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $packageRoot -Force }
+@'
+The official Windows aria2 build identifies GMP 6.3.0, Expat 2.5.0,
+SQLite 3.43.1, zlib 1.3, c-ares 1.19.1, and libssh2 1.11.0.
+SQLite's pinned version-3.43.1 source build system regenerates the
+amalgamation. Build guidance is in the aria2 source archive and
+bundled Windows build notes. No byte-for-byte reproduction of the
+upstream Windows binary is claimed.
+'@ | Set-Content -LiteralPath (Join-Path $aria2Sources 'BUILD-NOTES.txt') -Encoding utf8
 $manifest | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $packageRoot 'SOURCE-MANIFEST.json') -Encoding utf8
 
 if ($isComplete) {

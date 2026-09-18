@@ -1,15 +1,15 @@
 import { app, Notification, shell } from 'electron'
-import { execFile, spawn, type ChildProcessByStdio } from 'node:child_process'
+import { execFile, spawn, type ChildProcess } from 'node:child_process'
 import { existsSync, mkdirSync, readdirSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { promisify } from 'node:util'
-import type { Readable } from 'node:stream'
 import type { AnalyzeRequest, DimeLogEntry, EnqueueRequest, FormatInfo, JobProgress, JobRecord, MediaAnalysis, MediaEntry } from '../shared/types'
 import { DimeDatabase } from './database'
 import { classifyEngineError, isBrowserCookieAccessError, sanitizeEngineLog } from './errors'
 import { buildFormatArguments } from './format'
-import { parseProgress } from './progress'
+import { parseProgress, LineBuffer } from './progress'
+import { stopProcessTree } from './process-control'
 import { categories } from './library'
 import { parseExtractors } from './sites'
 
@@ -17,8 +17,10 @@ const execFileAsync = promisify(execFile)
 interface CommandSpec { command: string; prefix: string[]; cwd?: string }
 
 export class DownloadEngine {
-  private readonly running = new Map<string, ChildProcessByStdio<null, Readable, Readable>>()
+  private readonly running = new Map<string, ChildProcess>()
   private readonly stopped = new Map<string, 'paused' | 'cancelled'>()
+  externalActiveCount: () => number = () => 0
+  wake(): void { void this.schedule() }
   private scheduling = false
   private readonly cookieFallbackJobs = new Set<string>()
 
@@ -84,7 +86,7 @@ export class DownloadEngine {
     const parentId = request.analysis.isPlaylist ? randomUUID() : undefined
     const jobs = selected.map((entry) => this.db.createJob({
       id: randomUUID(), parentId, sourceUrl: entry.url || request.analysis.url, title: entry.title || 'Untitled media',
-      thumbnail: entry.thumbnail, state: 'queued', options: { ...request.options, outputDirectory }
+      thumbnail: entry.thumbnail, state: 'queued', options: { ...request.options, sourceHasAudio: request.analysis.isPlaylist ? undefined : request.analysis.formats.some((format) => format.audioCodec && format.audioCodec !== 'none') ? true : request.analysis.formats.length && request.analysis.formats.every((format) => format.audioCodec === 'none') ? false : undefined, exactFormatKind: request.options.exactFormatId ? request.analysis.formats.find((format) => format.id === request.options.exactFormatId)?.videoCodec === 'none' ? 'audio' : request.analysis.formats.find((format) => format.id === request.options.exactFormatId)?.audioCodec === 'none' ? 'video' : 'combined' : undefined, outputDirectory }
     }))
     jobs.forEach(this.notify)
     jobs.forEach((job) => this.log(job.id, 'info', `Queued ${job.title}`))
@@ -96,11 +98,11 @@ export class DownloadEngine {
     const child = this.running.get(id)
     if (child) {
       this.stopped.set(id, 'paused')
-      await stopProcessTree(child.pid)
+      try { await stopProcessTree(child.pid) } catch (error) { this.stopped.delete(id); throw error }
       this.log(id, 'warning', 'Download paused; partial data was preserved.')
     } else {
       const job = this.db.getJob(id)
-      if (job?.state === 'queued') this.notify(this.db.updateJob(id, { state: 'paused', progress: { ...job.progress, phase: 'Paused' } }))
+      if (job && ['queued', 'downloading', 'postprocessing'].includes(job.state)) this.notify(this.db.updateJob(id, { state: 'paused', progress: { ...job.progress, phase: 'Paused' } }))
     }
   }
 
@@ -108,7 +110,7 @@ export class DownloadEngine {
     const child = this.running.get(id)
     if (child) {
       this.stopped.set(id, 'cancelled')
-      await stopProcessTree(child.pid)
+      try { await stopProcessTree(child.pid) } catch (error) { this.stopped.delete(id); throw error }
       this.log(id, 'warning', 'Download cancelled.')
     } else {
       const job = this.db.getJob(id)
@@ -134,9 +136,9 @@ export class DownloadEngine {
     try {
       while (true) {
         const limit = this.db.getSettings().maxConcurrent
-        const capacity = limit - this.running.size
+        const capacity = limit - this.running.size - this.externalActiveCount()
         if (capacity <= 0) break
-        const next = this.db.listRunnable().slice(0, capacity)
+        const next = this.db.listRunnable().filter((job) => !job.options.torrent && !this.stopped.has(job.id)).slice(0, capacity)
         if (!next.length) break
         next.forEach((job) => void this.startJob(job))
         await new Promise((resolvePromise) => setTimeout(resolvePromise, 50))
@@ -149,14 +151,15 @@ export class DownloadEngine {
     const settings = this.db.getSettings()
     const outputTemplate = join(job.options.outputDirectory, settings.filenameStyle === 'title-only' ? '%(title).180B.%(ext)s' : '%(title).180B [%(id)s].%(ext)s')
     const args = [
-      ...spec.prefix, '--ignore-config', '--newline',
+      ...spec.prefix, '--ignore-config', '--newline', '--progress', '--progress-delta', '0.25',
       ...(this.db.getSettings().keepPartialFiles ? ['--continue', '--part'] : ['--no-continue', '--no-part']), '--no-overwrites',
       '--retries', String(settings.retryLimit * 2), '--fragment-retries', String(settings.retryLimit * 3), '--file-access-retries', String(settings.retryLimit + 2),
       '--retry-sleep', 'http:exp=1:20', '--retry-sleep', 'fragment:exp=1:20',
       '--socket-timeout', String(settings.connectionTimeout), '--concurrent-fragments', String(settings.concurrentFragments), '--sleep-requests', String(settings.playlistPacing),
       '--windows-filenames', '--trim-filenames', '180', '--output', outputTemplate,
       '--encoding', 'utf-8',
-      '--progress-template', 'download:__DIME_PROGRESS__|%(progress.status)s|%(progress.downloaded_bytes)s|%(progress.total_bytes,progress.total_bytes_estimate)s|%(progress.speed)s|%(progress.eta)s|%(progress._percent_str)s',
+      '--progress-template', 'download:__DIME_PROGRESS__|%(progress.status)s|%(progress.downloaded_bytes)s|%(progress.total_bytes,progress.total_bytes_estimate)s|%(progress.speed)s|%(progress.eta)s|%(progress._percent_str)s|%(info.format_id)s|%(info.vcodec)s|%(info.acodec)s',
+      '--progress-template', 'postprocess:__DIME_PROCESS__%(progress.status)s',
       '--print', 'after_move:__DIME_FILE__%(filepath)s', '--ffmpeg-location', this.ffmpegDirectory(),
       ...this.runtimeArgs(), ...(this.cookieFallbackJobs.has(job.id) ? [] : browserArgs(job.options.browser)), ...buildFormatArguments(job.options), job.sourceUrl
     ]
@@ -165,18 +168,23 @@ export class DownloadEngine {
     let current = this.db.updateJob(job.id, { state: 'downloading', attempts: job.attempts + 1, errorCode: undefined, errorMessage: undefined, progress: { ...job.progress, phase: 'Starting' } })
     this.notify(current)
     this.log(job.id, 'info', `Started attempt ${current.attempts} with ${job.options.kind === 'audio' ? job.options.audioContainer.toUpperCase() : `${job.options.quality === 'best' ? 'best quality' : `${job.options.quality}p`} ${job.options.videoContainer.toUpperCase()}`}.`)
-    let stdoutBuffer = ''
+    const stdoutLines = new LineBuffer()
+    const stderrLines = new LineBuffer()
     let stderr = ''
     let cookieWarningLogged = false
     let finalPath: string | undefined
     const startedAt = Date.now()
     let lastPhase = ''
     const consumeLine = (line: string): void => {
+      if (this.stopped.has(job.id)) return
       if (line.startsWith('__DIME_PROGRESS__')) {
         const progress = parseProgress(line)
         current = this.db.updateJob(job.id, { state: progress.phase === 'Post-processing' ? 'postprocessing' : 'downloading', progress })
         this.notify(current)
         if (progress.phase !== lastPhase) { lastPhase = progress.phase; this.log(job.id, 'info', progress.phase) }
+      } else if (line.startsWith('__DIME_PROCESS__')) {
+        current = this.db.updateJob(job.id, { state: 'postprocessing', progress: { ...current.progress, phase: 'Merging / converting', indeterminate: true } })
+        this.notify(current)
       } else if (line.startsWith('__DIME_FILE__')) {
         finalPath = line.slice('__DIME_FILE__'.length).trim()
         this.log(job.id, 'info', 'yt-dlp reported the final output path.')
@@ -185,14 +193,12 @@ export class DownloadEngine {
     child.stdout.setEncoding('utf8')
     child.stderr.setEncoding('utf8')
     child.stdout.on('data', (chunk: string) => {
-      stdoutBuffer += chunk
-      const lines = stdoutBuffer.split(/\r?\n/)
-      stdoutBuffer = lines.pop() ?? ''
-      for (const line of lines) consumeLine(line)
+      for (const line of stdoutLines.push(chunk)) consumeLine(line)
     })
     child.stderr.on('data', (chunk: string) => {
       stderr = `${stderr}${chunk}`.slice(-32_000)
-      for (const line of chunk.split(/\r?\n/)) {
+      for (const line of stderrLines.push(chunk)) {
+        consumeLine(line)
         if (isBrowserCookieAccessError(line)) {
           if (!cookieWarningLogged) {
             cookieWarningLogged = true
@@ -205,7 +211,7 @@ export class DownloadEngine {
     })
     child.on('error', (error) => { stderr += `\n${error.message}` })
     child.on('close', async (code) => {
-      if (stdoutBuffer.trim()) consumeLine(stdoutBuffer.trim())
+      for (const line of [...stdoutLines.flush(), ...stderrLines.flush()]) consumeLine(line)
       this.running.delete(job.id)
       const stopped = this.stopped.get(job.id)
       this.stopped.delete(job.id)
@@ -219,13 +225,17 @@ export class DownloadEngine {
           void this.schedule()
           return
         }
-        const validation = await this.validateOutput(resolvedPath, job.options.kind === 'video' && job.options.videoContainer === 'mp4')
+        this.notify(this.db.updateJob(job.id, { state: 'postprocessing', progress: { ...latest.progress, phase: 'Verifying output', indeterminate: true } }))
+        const validation = await this.validateOutput(resolvedPath, job)
+        const validationStop = this.stopped.get(job.id)
+        if (validationStop) this.notify(this.db.updateJob(job.id, { state: validationStop, progress: { ...latest.progress, phase: validationStop === 'paused' ? 'Paused' : 'Cancelled' } }))
+        if (validationStop || ['paused', 'cancelled'].includes(this.db.getJob(job.id)?.state ?? '')) { this.stopped.delete(job.id); void this.schedule(); return }
         if (validation.valid) {
           this.notify(this.db.updateJob(job.id, { state: 'completed', outputPath: resolvedPath, size: validation.size, progress: { percent: 100, phase: 'Completed' } }))
           this.log(job.id, 'success', `Completed and verified ${resolvedPath}.`)
           this.cookieFallbackJobs.delete(job.id)
-          if (settings.completionNotifications && Notification.isSupported()) new Notification({ title: 'dlME download complete', body: job.title }).show()
-          if (settings.completionSound) shell.beep()
+          if (this.db.getSettings().completionNotifications && Notification.isSupported()) new Notification({ title: 'dlME download complete', body: job.title, silent: !this.db.getSettings().completionSound }).show()
+          if (this.db.getSettings().completionSound) shell.beep()
         }
         else this.block(job.id, latest, 'invalid_output', validation.message)
       } else if (isBrowserCookieAccessError(stderr) && job.options.browser?.enabled && !this.cookieFallbackJobs.has(job.id)) {
@@ -257,15 +267,22 @@ export class DownloadEngine {
     this.notifyLog?.(entry)
   }
 
-  private async validateOutput(path: string, requireMp4 = false): Promise<{ valid: boolean; size?: number; message: string }> {
+  private async validateOutput(path: string, job: JobRecord): Promise<{ valid: boolean; size?: number; message: string }> {
     try {
       const size = statSync(path).size
       if (size <= 0) return { valid: false, message: 'The completed output file was empty.' }
       const ffprobe = join(this.ffmpegDirectory(), 'ffprobe.exe')
-      const { stdout } = await execFileAsync(ffprobe, ['-v', 'error', '-show_entries', 'format=duration,format_name:stream=codec_type', '-of', 'json', path], { windowsHide: true, timeout: 30_000 })
+      const { stdout } = await new Promise<{ stdout: string }>((done, reject) => {
+        const child = execFile(ffprobe, ['-v', 'error', '-show_entries', 'format=duration,format_name:stream=codec_type', '-of', 'json', path], { windowsHide: true, timeout: 30_000 }, (error, stdout) => { if (this.running.get(job.id) === child) this.running.delete(job.id); if (error) reject(error); else done({ stdout }) })
+        this.running.set(job.id, child)
+      })
       const metadata = JSON.parse(stdout)
       if (!metadata.streams?.length) return { valid: false, message: 'The output has no playable media streams.' }
-      if (requireMp4 && (!/\.mp4$/i.test(path) || !metadata.format?.format_name?.split(',').includes('mp4'))) return { valid: false, message: 'The output is not a verified MP4. Choose MP4 and retry.' }
+      const kinds = metadata.streams.map((stream: { codec_type: string }) => stream.codec_type)
+      if (job.options.kind === 'audio' && !kinds.includes('audio')) return { valid: false, message: 'The output contains no audio stream.' }
+      if (job.options.kind === 'video' && !kinds.includes('video')) return { valid: false, message: 'The output contains no video stream.' }
+      if (job.options.kind === 'video' && job.options.sourceHasAudio !== false && !kinds.includes('audio')) return { valid: false, message: 'The video output is missing audio. Select automatic video with audio and retry.' }
+      if (job.options.kind === 'video' && job.options.videoContainer === 'mp4' && (!/\.mp4$/i.test(path) || !metadata.format?.format_name?.split(',').includes('mp4'))) return { valid: false, message: 'The output is not a verified MP4. Choose MP4 and retry.' }
       return { valid: true, size, message: '' }
     } catch (error) { return { valid: false, message: `FFprobe could not validate the output: ${error instanceof Error ? error.message : String(error)}` } }
   }
@@ -332,7 +349,7 @@ function normalizeAnalysis(url: string, raw: Record<string, unknown>): MediaAnal
   const formats: FormatInfo[] = formatsRaw.map((format) => ({
     id: String(format.format_id ?? ''), label: String(format.format ?? format.format_note ?? format.format_id ?? 'Unknown'), extension: String(format.ext ?? ''),
     width: numberOrUndefined(format.width), height: numberOrUndefined(format.height), fps: numberOrUndefined(format.fps),
-    videoCodec: stringOrUndefined(format.vcodec), audioCodec: stringOrUndefined(format.acodec), bitrate: numberOrUndefined(format.tbr),
+    videoCodec: typeof format.vcodec === 'string' ? format.vcodec : undefined, audioCodec: typeof format.acodec === 'string' ? format.acodec : undefined, bitrate: numberOrUndefined(format.tbr),
     size: numberOrUndefined(format.filesize ?? format.filesize_approx), protocol: stringOrUndefined(format.protocol)
   })).filter((format) => format.id && !['mhtml', 'jpg', 'png'].includes(format.extension))
   return {
@@ -378,11 +395,7 @@ function redactLog(value: string): string { return sanitizeEngineLog(value) }
 
 class EngineRunError extends Error { constructor(readonly detail: string, message: string) { super(message) } }
 
-async function stopProcessTree(pid?: number): Promise<void> {
-  if (!pid) return
-  if (process.platform !== 'win32') { try { process.kill(pid, 'SIGTERM') } catch { /* already stopped */ }; return }
-  await new Promise<void>((resolvePromise) => execFile('taskkill', ['/PID', String(pid), '/T'], { windowsHide: true }, () => resolvePromise()))
-}
+
 
 function dirnameOfExecutable(name: string): string | undefined {
   const pathEntries = (process.env.PATH ?? '').split(';')

@@ -1,7 +1,17 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer, webUtils } from 'electron'
 import type { DimeApi, DimeLogEntry, JobRecord } from '../shared/types'
 
 const api: DimeApi = {
+  importTorrent: () => ipcRenderer.invoke('dime:torrent-import'),
+  addTorrentInput: (source) => ipcRenderer.invoke('dime:torrent-add-input', source),
+  getTorrentInputs: () => ipcRenderer.invoke('dime:torrent-inputs'),
+  resolveTorrent: (id) => ipcRenderer.invoke('dime:torrent-resolve', id),
+  cancelTorrentInput: (id) => ipcRenderer.invoke('dime:torrent-close', id),
+  enqueueTorrent: (request) => ipcRenderer.invoke('dime:torrent-enqueue', request),
+  torrentAssociation: (register) => ipcRenderer.invoke('dime:torrent-association', register),
+  openTorrentFolder: (id) => ipcRenderer.invoke('dime:torrent-folder', id),
+  onTorrentInput: (callback) => subscribe('dime:torrent-input', callback),
+  getDroppedTorrentPath: (file) => webUtils.getPathForFile(file),
   getAppInfo: () => ipcRenderer.invoke('dime:app-info'),
   getSupportedSites: () => ipcRenderer.invoke('dime:supported-sites'),
   listDownloadedFiles: () => ipcRenderer.invoke('dime:library'),

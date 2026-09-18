@@ -12,7 +12,9 @@ Electron main process
     ├── filesystem library
     ├── yt-dlp process controller
     ├── FFmpeg and FFprobe validation
-    └── engine update service
+    ├── engine update service
+    ├── aria2 torrent controller (authenticated loopback RPC)
+    └── Windows magnet/file handoff and pending Add Torrent inputs
 ```
 
 The renderer runs with context isolation, sandboxing, Node integration disabled, and navigation restricted. Filesystem, process, SQLite, dialog, and shell operations remain in the main process.
@@ -20,3 +22,5 @@ The renderer runs with context isolation, sandboxing, Node integration disabled,
 The application retains `dime-downloader`, `com.dime.downloader`, and several internal `dime` identifiers for compatibility with existing profiles and installations. They are implementation identifiers; the visible product name is dlME.
 
 Downloads and settings remain local. The Files browser reads authorized download roots independently of history and rejects canonical paths that escape those roots.
+
+Torrent metadata uses bounded bencode decoding and Windows path validation. Torrent options are stored in the existing JSON job field; old jobs remain media jobs. Piece integrity replaces FFprobe for torrent payloads.
