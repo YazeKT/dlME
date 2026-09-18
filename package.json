@@ -15,6 +15,7 @@
     "url": "https://github.com/YazeKT/dlME/issues"
   },
   "scripts": {
+    "postinstall": "node node_modules/electron/install.js",
     "dev": "electron-vite dev",
     "start": "electron-vite preview",
     "typecheck": "tsc --noEmit",
