@@ -4,7 +4,7 @@ Thank you for helping improve dlME. Bug reports, reproducible site-compatibility
 
 ## Before opening an issue
 
-- Update to the newest dlME beta and stable yt-dlp engine offered by the app.
+- Update to the newest stable dlME release and stable yt-dlp engine offered by the app.
 - Search existing issues.
 - Remove private URLs, cookies, usernames, tokens, and personal file paths from logs.
 - Confirm you have permission to test the supplied media URL.

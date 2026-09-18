@@ -11,7 +11,7 @@ Make the product page feel like the dlME app opened outward into a product story
 3. Learn the three standout differences in depth: verified completion, resilient recovery, and filesystem-backed browsing.
 4. Understand the complete Link → Choose → Follow → Keep workflow.
 5. Inspect the real Windows interface in a dedicated uncropped screenshot gallery.
-6. Inspect honest engine, build, privacy, compatibility, and unsigned-beta evidence.
+6. Inspect honest engine, build, privacy, compatibility, and unsigned-build evidence.
 7. Download the official Setup or Portable release from GitHub.
 
 ## Visual system
@@ -41,7 +41,7 @@ The page behaves like an active dlME job. A mint scroll-status line tracks the p
 
 ## Build evidence
 
-The proof dashboard shows only current, defensible evidence: 1,752 extractor entries, 32/32 tests, zero current npm-audit findings, two Windows builds, four checksummed runtime executables, six file categories, SHA-256 release verification, and ten published 0.9.1 assets. The publishing workflow runs the app verification suite and npm audit before deployment, and the unsigned Open Beta warning remains adjacent.
+The proof dashboard reads current test, audit, runtime, and release metadata. For 1.0.0 the local Windows suite passes 50 tests, five runtime executables are checksummed, and installer/portable builds are available. Linux site CI skips the Windows process-tree test. The site presents functional torrent support alongside media downloads and retains the unsigned-build disclosure. It does not treat extractor availability as a guarantee for every URL.
 
 ## App-to-site update path
 

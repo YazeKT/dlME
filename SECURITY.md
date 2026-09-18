@@ -4,7 +4,8 @@
 
 | Version | Security fixes |
 | --- | --- |
-| 0.9.x Open Beta | Yes |
+| 1.0.x Stable | Yes |
+| 0.9.x Open Beta | No; upgrade to 1.0.0 |
 | Earlier internal builds | No |
 
 ## Report a vulnerability

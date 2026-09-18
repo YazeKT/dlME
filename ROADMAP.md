@@ -1,8 +1,8 @@
 # Roadmap
 
-dlME is in open beta. Priorities are ordered by user impact rather than promised dates.
+dlME 1.0.0 is the first Stable release. Priorities are ordered by user impact rather than promised dates.
 
-## Beta priorities
+## Maintenance priorities
 
 - Maintain reliable MP4 and audio output as upstream sites change.
 - Improve recovery messages for authentication, rate limits, and site challenges.
@@ -10,11 +10,12 @@ dlME is in open beta. Priorities are ordered by user impact rather than promised
 - Make engine provenance and release reproduction easier to audit.
 - Add Authenticode signing when a suitable certificate is available.
 
-## Before 1.0
+## Future improvements
 
-- Complete broader Windows installation and upgrade testing.
-- Confirm stable migrations for settings, history, and portable data.
+- Expand Windows installation, upgrade, and portable-profile coverage.
+- Broaden real-world tracker and peer interoperability testing.
+- Evaluate pure BitTorrent v2 support; 1.0.0 supports v1 and hybrid metadata.
 - Review the public support load and issue templates.
 - Document a dependable, repeatable release and rollback procedure.
 
-The roadmap may change based on beta findings. It does not promise support for a specific website or release date.
+The roadmap may change based on user reports and verification findings. It does not promise support for a specific website or release date.
