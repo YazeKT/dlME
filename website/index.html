@@ -6,16 +6,16 @@
     <meta name="description" content="dlME is a resilient Windows media and torrent downloader with verified output, truthful live progress, and a local file library." />
     <meta name="theme-color" content="#000000" />
     <meta property="og:title" content="dlME — From link to verified local file." />
-    <meta property="og:description" content="Verified media output. Live download truth. Local files that stay yours." />
+    <meta property="og:description" content="Media URLs, magnet links, and torrent files with visible progress, working controls, and verified local output." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://yazekt.github.io/dlME/assets/dlme-product-flow.webp" />
     <meta property="og:url" content="https://yazekt.github.io/dlME/" />
     <link rel="canonical" href="https://yazekt.github.io/dlME/" />
     <title>dlME — Windows media and torrent downloader</title>
     <link rel="icon" href="assets/dlme-logo.png" />
-    <link rel="stylesheet" href="styles.css?v=3" />
-    <script src="site-data.js?v=3"></script>
-    <script src="app.js?v=3" defer></script>
+    <link rel="stylesheet" href="styles.css?v=4" />
+    <script src="site-data.js?v=4"></script>
+    <script src="app.js?v=4" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -24,7 +24,7 @@
     <header class="site-header" data-header>
       <a class="brand" href="#top" aria-label="dlME home"><img src="assets/dlme-logo.png" alt="" width="34" height="34" /><span>dlME</span></a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span class="sr-only">Open menu</span><span></span><span></span></button>
-      <nav id="site-nav" class="site-nav" aria-label="Main navigation"><a href="#standouts">Why dlME</a><a href="#workflow">Workflow</a><a href="#build">Build facts</a><a href="#questions">Questions</a></nav>
+      <nav id="site-nav" class="site-nav" aria-label="Main navigation"><a href="#standouts">Why dlME</a><a href="#torrents">Torrents</a><a href="#workflow">Workflow</a><a href="#build">Build facts</a><a href="#questions">Questions</a></nav>
       <a class="header-cta" data-release-link href="https://github.com/YazeKT/dlME/releases">Get dlME <span aria-hidden="true">↗</span></a>
     </header>
 
@@ -34,7 +34,7 @@
         <div class="hero-copy" data-reveal>
           <div class="release-line"><span class="live-dot" aria-hidden="true"></span><span>Stable <b data-version>1.0.0</b></span><span class="release-divider" aria-hidden="true"></span><span>Windows 10 &amp; 11 · x64</span></div>
           <h1>From link to<br /><span>verified local file.</span></h1>
-          <p class="hero-lede">Analyze a URL or playlist, choose video or audio, follow real speed and ETA, and let FFprobe verify the finished media before dlME calls it complete.</p>
+          <p class="hero-lede">Download from media URLs, browser magnet links, and torrent files. Choose what to keep, follow real progress, stop the actual transfer, and verify the finished output.</p>
           <div class="hero-actions">
             <a class="button button-primary" data-release-link href="https://github.com/YazeKT/dlME/releases">Download for Windows <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2v10m0 0 4-4m-4 4L6 8M3 15v2h14v-2" /></svg></a>
             <a class="button button-secondary" href="#standouts">Explore the features</a>
@@ -48,14 +48,24 @@
             <figcaption><span>LINK TO LOCAL FILE</span><strong>Process visible. Output verified.</strong></figcaption>
             <div class="job-float" aria-label="Example download status">
               <div class="job-float-top"><span><i></i> DOWNLOADING</span><strong>78%</strong></div>
-              <p>Preparing verified MP4 output</p><div class="job-progress"><span></span></div><div class="job-meta"><span>12.4 MB/s</span><span>00:08 left</span></div>
+              <p>Downloading selected files</p><div class="job-progress"><span></span></div><div class="job-meta"><span>12.4 MB/s</span><span>00:08 left</span></div>
             </div>
           </figure>
         </div>
 
         <ul class="hero-proof" aria-label="Core product facts">
-          <li><strong>FFprobe</strong><span>verified completion</span></li><li><strong>Live</strong><span>speed, ETA &amp; logs</span></li><li><strong>Local</strong><span>files &amp; app data</span></li><li><strong data-extractors>1,752</strong><span>extractor entries</span></li>
+          <li><strong>Media</strong><span>video &amp; best audio</span></li><li><strong>Torrents</strong><span>magnet &amp; .torrent</span></li><li><strong>Live</strong><span>speed, ETA &amp; peers</span></li><li><strong>Local</strong><span>files &amp; app data</span></li>
         </ul>
+      </section>
+
+      <section class="standout torrent-standout section-edge" id="torrents">
+        <div class="standout-copy" data-reveal>
+          <span class="feature-number">FUNCTIONAL TORRENT DOWNLOADS</span><h2>From a magnet click to the files you chose.</h2>
+          <p>Installed dlME can receive a magnet link from your browser or open an imported, dropped, or double-clicked <code>.torrent</code> file. Review the destination and file list before anything downloads.</p>
+          <ul class="check-list"><li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-9" /></svg>Games, applications, archives, documents, and media</li><li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-9" /></svg>Real speed, ETA, peers, selected-file progress, and piece checks</li><li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-9" /></svg>Pause, resume, cancel, and saved transfers across restarts</li></ul>
+          <p class="torrent-boundary"><strong>No ads. No promoted games. No embedded player.</strong> Transfers stop when the download completes; uploading can occur while downloading.</p>
+        </div>
+        <figure class="product-screen torrent-screen" data-reveal><div class="screen-bar"><span>Torrents</span><i>SELECTED FILES COMPLETE</i></div><img src="assets/app-torrents.png" alt="The real dlME Torrents workspace showing a completed selected-file download" width="1120" height="760" loading="lazy" /><figcaption>Choose files and destination before download, then follow the real swarm state.</figcaption></figure>
       </section>
 
       <section class="intro section" id="standouts">
@@ -96,14 +106,15 @@
 
       <section class="workflow section" id="workflow">
         <div class="section-kicker" data-reveal><span>THE COMPLETE PATH</span><i></i></div>
-        <div class="workflow-heading" data-reveal><h2>One link. Four visible stages.</h2><p>The interface keeps decisions and recovery close to the job instead of hiding them behind a single generic progress state.</p></div>
-        <ol class="download-rail" data-reveal><li><span>01</span><div><small>LINK</small><h3>Analyze the source</h3><p>Paste a public media or playlist URL and load the formats the engine actually reports.</p></div></li><li><span>02</span><div><small>CHOOSE</small><h3>Control the output</h3><p>Select video, audio, playlist items, practical defaults, or an exact source stream.</p></div></li><li><span>03</span><div><small>FOLLOW</small><h3>See the real job</h3><p>Read percentage, bytes, speed, ETA, phase, retries, and sanitized engine messages.</p></div></li><li><span>04</span><div><small>KEEP</small><h3>Verify and organize</h3><p>Inspect the final media, route it into clear folders, and browse it independently of history.</p></div></li></ol>
+        <div class="workflow-heading" data-reveal><h2>One source. Four visible stages.</h2><p>Media and torrent workflows keep decisions and recovery close to the job instead of hiding them behind one generic progress state.</p></div>
+        <ol class="download-rail" data-reveal><li><span>01</span><div><small>ADD</small><h3>Open the source</h3><p>Paste a media URL or magnet, or import a local torrent file.</p></div></li><li><span>02</span><div><small>CHOOSE</small><h3>Control the result</h3><p>Select formats, playlist entries, torrent files, and the destination before transfer.</p></div></li><li><span>03</span><div><small>FOLLOW</small><h3>See the real job</h3><p>Read percentage, bytes, speed, ETA, phase, retries, peers, and sanitized messages.</p></div></li><li><span>04</span><div><small>KEEP</small><h3>Verify and organize</h3><p>Check media streams or torrent pieces, then browse the real files independently of history.</p></div></li></ol>
       </section>
 
       <section class="interface-proof section" aria-labelledby="interface-title">
         <div class="section-kicker" data-reveal><span>THE ACTUAL APP</span><i></i></div>
         <div class="interface-heading" data-reveal><h2 id="interface-title">Real interface.<br />Natural proportions.</h2><p>These are direct captures from dlME—not generated mockups. Each screen is shown uncropped so the product stays legible and honest.</p></div>
         <div class="screen-gallery">
+          <figure class="product-screen" data-reveal><div class="screen-bar"><span>Torrents</span><i>MAGNET + FILE INPUT</i></div><img src="assets/app-torrents.png" alt="The real dlME Torrents workspace" width="1120" height="760" loading="lazy" /><figcaption>Select files, follow peers, and control the transfer.</figcaption></figure>
           <figure class="product-screen" data-reveal><div class="screen-bar"><span>Downloader</span><i>LIVE JOB CONTROL</i></div><img src="assets/app-downloader.webp" alt="The real dlME Downloader interface" width="1120" height="760" loading="lazy" /><figcaption>Analyze, choose, follow, and recover.</figcaption></figure>
           <figure class="product-screen" data-reveal><div class="screen-bar"><span>Files</span><i>LOCAL LIBRARY</i></div><img src="assets/app-files.webp" alt="The real dlME Files browser" width="1120" height="760" loading="lazy" /><figcaption>Browse what is actually on disk.</figcaption></figure>
           <figure class="product-screen" data-reveal><div class="screen-bar"><span>Supported</span><i>ENGINE DIRECTORY</i></div><img src="assets/app-supported.webp" alt="The real dlME installed-engine extractor directory" width="1120" height="760" loading="lazy" /><figcaption>Inspect the installed engine clearly.</figcaption></figure>
@@ -124,7 +135,7 @@
 
       <section class="privacy section-edge">
         <div class="privacy-mark" data-reveal aria-hidden="true"><img src="assets/dlme-logo.png" alt="" width="96" height="96" /><span></span></div>
-        <div class="privacy-copy" data-reveal><span class="feature-number">LOCAL BY DESIGN</span><h2>No dlME account.<br />No ads. No analytics. No telemetry.</h2><p>Settings, history, logs, remembered folders, partial state, and file records stay on your Windows computer. Network activity is limited to the media operation you request and official engine update endpoints.</p><a href="https://github.com/YazeKT/dlME/blob/main/docs/PRIVACY.md">Read the privacy document <span aria-hidden="true">↗</span></a></div>
+        <div class="privacy-copy" data-reveal><span class="feature-number">LOCAL BY DESIGN</span><h2>No dlME account.<br />No ads. No analytics. No telemetry.</h2><p>Settings, history, logs, remembered folders, torrent metadata, partial state, and file records stay on your Windows computer. Network activity is limited to the download you request, its required sites or swarm, and official engine update endpoints.</p><a href="https://github.com/YazeKT/dlME/blob/main/docs/PRIVACY.md">Read the privacy document <span aria-hidden="true">↗</span></a></div>
       </section>
 
       <section class="questions section" id="questions">
@@ -132,6 +143,8 @@
         <div class="questions-grid"><h2 data-reveal>Direct answers,<br />before the click.</h2><div class="faq-list" data-reveal>
           <details><summary>Does every listed website always work?<span aria-hidden="true">+</span></summary><p>No. The directory shows extractor code available in the installed engine. Websites, login rules, regional limits, removed media, rate limits, and anti-bot systems can change independently.</p></details>
           <details><summary>Does dlME bypass DRM or paywalls?<span aria-hidden="true">+</span></summary><p>No. dlME does not bypass DRM, paywalls, access controls, or site challenges. Download only media you own or have permission to save.</p></details>
+          <details><summary>Can dlME download any kind of torrent file?<span aria-hidden="true">+</span></summary><p>Yes. dlME does not restrict payload categories: games, applications, archives, disk images, documents, and media are supported. It never automatically runs or opens downloaded applications. Version 1.0.0 supports BitTorrent v1 and hybrid metadata; pure v2 metadata is not yet supported.</p></details>
+          <details><summary>Does torrent downloading upload data?<span aria-hidden="true">+</span></summary><p>It can upload pieces to peers while your requested files are downloading. dlME stops the transfer at completion instead of continuing to seed.</p></details>
           <details><summary>Where does my data go?<span aria-hidden="true">+</span></summary><p>Your settings, history, logs, and file records remain on your computer. Browser-session access is optional and off by default.</p></details>
           <details><summary>Why does Windows show a warning?<span aria-hidden="true">+</span></summary><p>The Stable executables are currently unsigned. Verify the included SHA-256 sums and download only from the official GitHub release.</p></details>
           <details><summary>Setup or portable—what should I choose?<span aria-hidden="true">+</span></summary><p>Use Setup for a normal Windows installation and shortcuts. Use Portable for a self-contained copy whose profile lives in <code>dlME-data</code> beside the executable.</p></details>
@@ -142,7 +155,7 @@
         <div data-reveal><div class="final-brand"><img src="assets/dlme-logo.png" alt="" width="52" height="52" /><span>dlME</span></div><h2>Download clearly.<br /><span>Keep locally.</span></h2><p>Windows 10 &amp; 11 · x64 · Stable <b data-version>1.0.0</b></p></div>
         <div class="final-actions" data-reveal><a class="button button-primary" data-release-link href="https://github.com/YazeKT/dlME/releases">View public releases <span data-version>1.0.0</span> <span aria-hidden="true">↗</span></a><a href="https://github.com/YazeKT/dlME">View the source on GitHub <span aria-hidden="true">↗</span></a><small>Unsigned Stable · MIT application source · third-party components keep their own licenses</small></div>
       </section>
-    <section class="section"><div class="container"><h2>Functional torrent downloads</h2><p>Click browser magnets in installed dlME, choose files and a destination, then download. Games, applications, documents, archives, disk images, and media keep their original contents and structure. No advertising, promotional feeds, or embedded player.</p><p>Pause, resume, piece verification, and real progress. BitTorrent v1 and hybrid torrents with v1 metadata. Transfer stops at completion; uploading can occur while downloading.</p></div></section></main>
+    </main>
 
     <footer class="site-footer"><a class="brand" href="#top"><img src="assets/dlme-logo.png" alt="" width="28" height="28" /><span>dlME</span></a><p>Created by Kirsten Trimaley · Published by Yaze Media</p><nav aria-label="Footer navigation"><a href="https://github.com/YazeKT/dlME/blob/main/docs/PRIVACY.md">Privacy</a><a href="https://github.com/YazeKT/dlME/blob/main/docs/LEGAL.md">Legal</a><a href="https://github.com/YazeKT/dlME/issues">Support</a></nav></footer>
   </body>
