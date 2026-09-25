@@ -1,6 +1,6 @@
 {
   "name": "dlme",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "dlME - Windows media and torrent downloader",
   "main": "out/main/index.js",
   "author": "Yaze Media",
@@ -37,6 +37,7 @@
   "dependencies": {
     "@phosphor-icons/react": "2.1.10",
     "better-sqlite3": "13.0.3",
+    "electron-updater": "6.8.9",
     "openpgp": "6.3.1",
     "react": "19.2.8",
     "react-dom": "19.2.8"
@@ -64,8 +65,16 @@
       "resources/engine/**"
     ],
     "directories": {
-      "output": "release/1.0.0"
+      "output": "release/1.1.0"
     },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "YazeKT",
+        "repo": "dlME",
+        "releaseType": "release"
+      }
+    ],
     "files": [
       "out/**",
       "package.json"

@@ -7,7 +7,8 @@ import assert from 'node:assert/strict'
 
 const require = createRequire(import.meta.url)
 const { _electron: electron } = require(process.env.DLME_PLAYWRIGHT_PATH || 'playwright')
-const root = resolve('verification/1.0.0'), profile = join(root, `media-controls-${Date.now()}`), downloads = join(profile, 'Downloads'), fixture = join(profile, 'dash')
+const version = JSON.parse(await readFile(resolve('package.json'), 'utf8')).version
+const root = resolve(`verification/${version}`), profile = join(root, `media-controls-${Date.now()}`), downloads = join(profile, 'Downloads'), fixture = join(profile, 'dash')
 await mkdir(fixture, { recursive: true }); await mkdir(downloads, { recursive: true })
 const ffmpeg = resolve('resources/engine/ffmpeg.exe'), ffprobe = resolve('resources/engine/ffprobe.exe')
 execFileSync(ffmpeg, ['-hide_banner', '-loglevel', 'error', '-f', 'lavfi', '-i', 'testsrc2=size=640x360:rate=30', '-f', 'lavfi', '-i', 'sine=frequency=440:sample_rate=48000', '-t', '8', '-c:v', 'libx264', '-preset', 'ultrafast', '-c:a', 'aac', '-f', 'dash', join(fixture, 'manifest.mpd')], { windowsHide: true, cwd: fixture })
@@ -32,7 +33,7 @@ const server = createServer(async (request, response) => {
 })
 await new Promise((done) => server.listen(0, '127.0.0.1', done))
 const baseUrl = `http://127.0.0.1:${server.address().port}`
-const report = { version: '1.0.0', checks: [], outputs: [] }
+const report = { version, checks: [], outputs: [] }
 let app
 async function poll(page, predicate, arg, timeout = 120000) { const deadline = Date.now() + timeout; while (Date.now() < deadline) { const value = await page.evaluate(predicate, arg); if (value) return value; await new Promise((done) => setTimeout(done, 200)) } throw new Error(`Timed out: ${predicate.toString()}`) }
 function probe(path) { return JSON.parse(execFileSync(ffprobe, ['-v', 'error', '-show_streams', '-show_format', '-of', 'json', path], { encoding: 'utf8', windowsHide: true })) }

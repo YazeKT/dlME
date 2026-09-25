@@ -7,10 +7,11 @@ import { DimeDatabase } from './database'
 import { DownloadEngine } from './engine'
 import { EngineUpdater } from './updater'
 import type { TorrentEngine } from './torrents'
+import type { AppUpdater } from './app-updater'
 import { assertLibraryPath, ensureDownloadFolders, libraryRoots, scanLibrary } from './library'
 import { importLegalDocument, readLegalDocuments } from './legal'
 
-export function registerIpc(window: BrowserWindow, db: DimeDatabase, engine: DownloadEngine, updater: EngineUpdater, torrents: TorrentEngine): void {
+export function registerIpc(window: BrowserWindow, db: DimeDatabase, engine: DownloadEngine, updater: EngineUpdater, appUpdater: AppUpdater, torrents: TorrentEngine): void {
   const isTorrent = (id: string): boolean => Boolean(db.getJob(assertId(id))?.options.torrent)
   ipcMain.handle('dime:torrent-inputs', () => torrents.getInputs())
   ipcMain.handle('dime:torrent-add-input', (_event, source: string) => torrents.addInput(source))
@@ -75,10 +76,13 @@ export function registerIpc(window: BrowserWindow, db: DimeDatabase, engine: Dow
     if (!url) throw new Error('Unknown account service.')
     return shell.openExternal(url)
   })
-  ipcMain.handle('dime:open-support-email', () => shell.openExternal('https://github.com/YazeKT/dlME/issues'))
+  ipcMain.handle('dime:open-support-email', () => shell.openExternal('mailto:kirstentrimaley@gmail.com?subject=dlME%20Support'))
   ipcMain.handle('dime:check-engine-update', () => updater.check())
   ipcMain.handle('dime:install-engine-update', () => updater.install())
   ipcMain.handle('dime:rollback-engine', () => updater.rollback())
+  ipcMain.handle('dime:check-app-update', () => appUpdater.check())
+  ipcMain.handle('dime:download-app-update', () => appUpdater.download())
+  ipcMain.handle('dime:install-app-update', () => appUpdater.install())
   ipcMain.handle('dime:window-minimize', () => window.minimize())
   ipcMain.handle('dime:window-toggle-maximize', () => { window.isMaximized() ? window.unmaximize() : window.maximize(); return window.isMaximized() })
   ipcMain.handle('dime:window-close', () => window.close())

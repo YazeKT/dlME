@@ -10,7 +10,7 @@ dlME may store settings, download history, remembered output folders, engine met
 
 ## Network activity
 
-dlME sends requests needed to analyze and download the URL supplied by the user. yt-dlp and supported JavaScript runtimes may contact the media service and related content-delivery or challenge endpoints. The engine updater contacts official GitHub release endpoints. The application does not operate an analytics or telemetry service.
+dlME sends requests needed to analyze and download the URL supplied by the user. yt-dlp and supported JavaScript runtimes may contact the media service and related content-delivery or challenge endpoints. The engine updater contacts official yt-dlp GitHub release endpoints, and the application updater contacts official YazeKT/dlME GitHub release endpoints. The application does not operate an analytics or telemetry service.
 
 ## Browser cookies
 

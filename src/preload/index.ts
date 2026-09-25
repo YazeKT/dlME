@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron'
-import type { DimeApi, DimeLogEntry, JobRecord } from '../shared/types'
+import type { AppUpdateInfo, DimeApi, DimeLogEntry, JobRecord } from '../shared/types'
 
 const api: DimeApi = {
   importTorrent: () => ipcRenderer.invoke('dime:torrent-import'),
@@ -42,12 +42,16 @@ const api: DimeApi = {
   checkEngineUpdate: () => ipcRenderer.invoke('dime:check-engine-update'),
   installEngineUpdate: () => ipcRenderer.invoke('dime:install-engine-update'),
   rollbackEngine: () => ipcRenderer.invoke('dime:rollback-engine'),
+  checkAppUpdate: () => ipcRenderer.invoke('dime:check-app-update'),
+  downloadAppUpdate: () => ipcRenderer.invoke('dime:download-app-update'),
+  installAppUpdate: () => ipcRenderer.invoke('dime:install-app-update'),
   windowMinimize: () => ipcRenderer.invoke('dime:window-minimize'),
   windowToggleMaximize: () => ipcRenderer.invoke('dime:window-toggle-maximize'),
   windowClose: () => ipcRenderer.invoke('dime:window-close'),
   onJobChanged: (callback) => subscribe<JobRecord>('dime:job-changed', callback),
   onLog: (callback) => subscribe<DimeLogEntry>('dime:log', callback),
-  onEngineUpdate: (callback) => subscribe<string>('dime:engine-update', callback)
+  onEngineUpdate: (callback) => subscribe<string>('dime:engine-update', callback),
+  onAppUpdate: (callback) => subscribe<AppUpdateInfo>('dime:app-update', callback)
 }
 
 function subscribe<T>(channel: string, callback: (value: T) => void): () => void {

@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.1.0 - 2026-09-25
+
+- Put current downloading and converting work at the top of Downloader with search and status filters.
+- Kept completed items in History and added video, audio, torrent, completion, and attention filters.
+- Embedded media metadata and artwork by default, with optional cleaned JSON and thumbnail sidecars.
+- Improved audio naming to `Artist - Title` when source metadata is available.
+- Prevented torrent cancellation from deleting payload or resume files.
+- Added GitHub-backed installed-app update checks, downloads, and restart-to-install support.
+- Corrected website and in-app image sizing to preserve original aspect ratios.
+
 All notable public changes to dlME are recorded here. The project uses semantic versioning while it is practical; versions below 1.0 may change workflows as the beta develops.
 
 ## [Unreleased]

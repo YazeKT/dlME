@@ -24,6 +24,9 @@ export interface MediaEntry {
   thumbnail?: string
   duration?: number
   uploader?: string
+  artist?: string
+  album?: string
+  releaseDate?: string
   selected: boolean
 }
 
@@ -34,6 +37,9 @@ export interface MediaAnalysis {
   thumbnail?: string
   duration?: number
   uploader?: string
+  artist?: string
+  album?: string
+  releaseDate?: string
   isLive: boolean
   isPlaylist: boolean
   entries: MediaEntry[]
@@ -93,6 +99,10 @@ export interface JobRecord {
   sourceUrl: string
   title: string
   thumbnail?: string
+  creator?: string
+  album?: string
+  duration?: number
+  extractor?: string
   state: JobState
   progress: JobProgress
   options: DownloadOptions
@@ -124,7 +134,21 @@ export interface AppSettings {
   completionSound: boolean
   engineAutoCheck: boolean
   filenameStyle: 'title-id' | 'title-only'
+  embedMetadata: boolean
+  embedThumbnail: boolean
+  saveMetadataSidecar: boolean
+  saveThumbnailSidecar: boolean
+  keepOriginalMedia: boolean
+  appAutoCheck: boolean
   tutorialCompleted: boolean
+}
+
+export interface AppUpdateInfo {
+  state: 'idle' | 'checking' | 'available' | 'downloading' | 'downloaded' | 'current' | 'error'
+  currentVersion: string
+  availableVersion?: string
+  percent?: number
+  message?: string
 }
 
 export interface DimeLogEntry {
@@ -191,12 +215,16 @@ export interface DimeApi {
   checkEngineUpdate(): Promise<EngineUpdateInfo>
   installEngineUpdate(): Promise<string>
   rollbackEngine(): Promise<string>
+  checkAppUpdate(): Promise<AppUpdateInfo>
+  downloadAppUpdate(): Promise<void>
+  installAppUpdate(): Promise<void>
   windowMinimize(): Promise<void>
   windowToggleMaximize(): Promise<boolean>
   windowClose(): Promise<void>
   onJobChanged(callback: (job: JobRecord) => void): () => void
   onLog(callback: (entry: DimeLogEntry) => void): () => void
   onEngineUpdate(callback: (message: string) => void): () => void
+  onAppUpdate(callback: (info: AppUpdateInfo) => void): () => void
 }
 
 export interface TorrentFile { index: number; path: string; length: number; completed?: number; selected?: boolean }

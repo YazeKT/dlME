@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module'
-import { mkdir, writeFile, readFile } from 'node:fs/promises'
+import { mkdir, writeFile, readFile, stat } from 'node:fs/promises'
 import { resolve, join } from 'node:path'
 import { createServer } from 'node:http'
 import { createHash } from 'node:crypto'
@@ -8,7 +8,8 @@ import assert from 'node:assert/strict'
 
 const require = createRequire(import.meta.url)
 const { _electron: electron } = require(process.env.DLME_PLAYWRIGHT_PATH || 'playwright')
-const root = resolve('verification/1.0.0'), profile = join(root, `stable-${Date.now()}`), downloads = join(profile, 'Downloads')
+const version = JSON.parse(await readFile(resolve('package.json'), 'utf8')).version
+const root = resolve(`verification/${version}`), profile = join(root, `stable-${Date.now()}`), downloads = join(profile, 'Downloads')
 await mkdir(downloads, { recursive: true })
 function bencode(value) {
   if (typeof value === 'string') value = Buffer.from(value)
@@ -39,7 +40,7 @@ for (const file of files) await writeFile(join(seedRoot, 'MixedFixture', file.na
 const seeder = spawn(resolve('resources/engine/aria2c.exe'), ['--no-conf', `--dir=${seedRoot}`, '--seed-time=10', '--seed-ratio=0', '--check-integrity=true', '--bt-hash-check-seed=true', '--enable-dht=false', '--enable-dht6=false', '--enable-peer-exchange=false', '--listen-port=16881', '--max-upload-limit=512K', '--console-log-level=warn', torrentPath], { windowsHide: true, stdio: 'pipe' })
 let seedLog = ''; seeder.stdout.on('data', (chunk) => { seedLog += chunk }); seeder.stderr.on('data', (chunk) => { seedLog += chunk })
 const magnet = `magnet:?xt=urn:btih:${infoHash}&dn=MixedFixture&tr=${encodeURIComponent(trackerUrl)}`
-const errors = [], report = { version: '1.0.0', profile, checks: [] }
+const errors = [], report = { version, profile, checks: [] }
 let app
 async function poll(page, predicate, arg, timeout = 90000) { const deadline = Date.now() + timeout; while (Date.now() < deadline) { const value = await page.evaluate(predicate, arg); if (value) return value; await new Promise((done) => setTimeout(done, 250)) } throw new Error(`Timed out: ${predicate.toString()}\nSeeder: ${seedLog}`) }
 try {
@@ -49,7 +50,7 @@ try {
   let page = await app.firstWindow(); page.on('pageerror', (error) => errors.push(error.message)); await page.waitForFunction(() => !!window.dime)
   await page.evaluate(async (folder) => { await window.dime.updateSettings({ outputDirectory: folder, tutorialCompleted: true, engineAutoCheck: false, completionSound: false, completionNotifications: false }) }, downloads)
   await page.reload(); await page.getByRole('heading', { name: 'Download media', exact: true }).waitFor()
-  assert.match(await page.locator('.version').innerText(), /1\.0\.0.*Stable/)
+  assert.match(await page.locator('.version').innerText(), new RegExp(`${version.replaceAll('.', '\\.') }.*Stable`))
   await page.getByRole('button', { name: 'Torrents', exact: true }).click()
   await page.getByRole('textbox', { name: 'Magnet link', exact: true }).fill(magnet)
   await page.getByRole('button', { name: 'Add magnet', exact: true }).click()
@@ -83,7 +84,21 @@ try {
   for (const file of files.slice(0, 2)) assert.deepEqual(await readFile(join(job.options.outputDirectory, 'MixedFixture', file.name)), file.data)
   report.checks.push('selected-file download integrity and completion')
   console.log('Torrent selected files verified')
-  await page.getByRole('button', { name: 'Files & peers', exact: true }).click()
+  // Cancelling must never remove payload bytes or resume data, even when media partial cleanup is disabled.
+  const cancelRoot = join(profile, 'cancel-preservation')
+  await page.evaluate(() => window.dime.updateSettings({ keepPartialFiles: false }))
+  const cancelJob = await page.evaluate(async ({ torrentPath, cancelRoot }) => {
+    const input = await window.dime.addTorrentInput(torrentPath)
+    const ready = input.status === 'ready' ? input : await window.dime.resolveTorrent(input.id)
+    return window.dime.enqueueTorrent({ id: ready.id, files: [ready.details.files[0].index], destination: cancelRoot })
+  }, { torrentPath, cancelRoot })
+  await poll(page, async (id) => { const item = (await window.dime.getHistory()).find((entry) => entry.id === id); return item?.progress.downloadedBytes > 0 }, cancelJob.id)
+  await page.evaluate((id) => window.dime.cancelJob(id), cancelJob.id)
+  await poll(page, async (id) => (await window.dime.getHistory()).find((entry) => entry.id === id && entry.state === 'cancelled'), cancelJob.id)
+  assert.ok((await stat(join(cancelRoot, 'MixedFixture', files[0].name))).size > 0)
+  report.checks.push('torrent cancellation preserves downloaded payload bytes when partial cleanup is disabled')
+  if (await page.getByRole('button', { name: 'Close Add Torrent', exact: true }).count()) await page.getByRole('button', { name: 'Close Add Torrent', exact: true }).click()
+  await page.getByRole('button', { name: 'Files & peers', exact: true }).first().click()
   await page.screenshot({ path: join(root, 'torrent-completed.png') })
   // Cold and warm external magnet handoff, using a no-peer hash for cancellation.
   const waitingMagnet = `magnet:?xt=urn:btih:${'b'.repeat(40)}&dn=WaitingFixture`

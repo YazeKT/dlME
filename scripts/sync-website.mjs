@@ -41,7 +41,7 @@ const data = {
   sourceVersion: pkg.version,
   engineVersion: runtimes.ytDlp.version,
   extractorEntries: 1752,
-  testCount: testResults?.numPassedTests ?? 50,
+  testCount: testResults?.numPassedTests ?? 52,
   auditFindings,
   runtimeCount: Object.keys(runtimes.binaryChecksums).length,
   releaseAssetCount: publishedRelease?.assets?.length ?? 10,

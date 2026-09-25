@@ -20,4 +20,16 @@
 @media(max-width:1000px){.page-heading{align-items:start}.association-row{font-size:11px}.torrent-dialog-footer{flex-wrap:wrap}.torrent-dialog-footer>span{flex-basis:100%}.sidebar{width:184px;flex-basis:184px}.page{padding:18px}.job-main{gap:8px}.job-percent{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.progress.indeterminate i{animation:none;transform:none}}
 
+/* 1.1.0: live work first, filterable activity, and distortion-free media art. */
+.current-activity{order:-1;padding:13px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+.current-activity .section-heading{margin-bottom:10px}.current-activity .section-heading h2{margin:2px 0 0;font-size:15px}.current-activity .section-heading>span{color:var(--accent);font-size:10px}
+.queue-controls{margin-bottom:9px}.queue-controls .segmented{width:min(460px,55%)}.queue-controls input{min-width:180px}
+.compact-empty{padding:15px;border:1px dashed var(--border2);border-radius:8px;color:var(--muted);font-size:11px;text-align:center}
+.thumbnail,.job-thumb{aspect-ratio:16/9}.thumbnail img,.job-thumb img,.history-file img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+.history-file img{width:52px;height:34px;flex:0 0 52px;border-radius:5px;background:var(--surface2)}
+.history-file>svg{flex:0 0 auto}.history-file>span{min-width:0}.history-file small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.history-filters{width:min(520px,62%)!important}.history-filters button{min-width:max-content;padding:0 9px}
+.theme-light .compact-empty{background:#f8fbf9}.theme-light .current-activity{box-shadow:0 1px 3px #13261b0d}
+@media(max-width:1000px){.history-controls{flex-direction:column}.history-controls .segmented,.queue-controls .segmented,.history-filters{width:100%!important;overflow-x:auto}.queue-controls input{width:100%}}
+
 .modal-backdrop{position:fixed;inset:0;z-index:50;background:#000b;display:flex;align-items:center;justify-content:center;padding:24px}.torrents-screen button{font-size:12px}.modal-backdrop .torrent-dialog{max-height:calc(100vh - 48px)}.torrent-dialog .torrent-file-list{max-height:30vh}.torrent-dialog .torrent-dialog-footer{position:sticky;bottom:-20px;background:var(--surface);padding:12px 0;margin-top:8px}

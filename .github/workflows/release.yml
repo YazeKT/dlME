@@ -47,5 +47,6 @@ jobs:
           path: |
             release/${{ steps.package.outputs.version }}/*.exe
             release/${{ steps.package.outputs.version }}/*.blockmap
+            release/${{ steps.package.outputs.version }}/latest.yml
             release/${{ steps.package.outputs.version }}/SHA256SUMS.txt
           if-no-files-found: error

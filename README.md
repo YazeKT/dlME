@@ -11,7 +11,7 @@
 
 <p align="center">
   <a href="https://github.com/YazeKT/dlME/actions/workflows/ci.yml"><img alt="Windows CI" src="https://github.com/YazeKT/dlME/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="https://github.com/YazeKT/dlME/releases"><img alt="Stable 1.0.0" src="https://img.shields.io/badge/release-1.0.0%20Stable-00e6a0"></a>
+  <a href="https://github.com/YazeKT/dlME/releases"><img alt="Stable 1.1.0" src="https://img.shields.io/badge/release-1.1.0%20Stable-00e6a0"></a>
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-1b2521"></a>
   <img alt="Windows 10 and 11" src="https://img.shields.io/badge/Windows-10%20%7C%2011-087cd5">
 </p>
@@ -26,7 +26,7 @@
 
 ## Download
 
-**dlME 1.0.0 Stable** is the current Windows release. It replaces the earlier Open Beta downloads.
+**dlME 1.1.0 Stable** is the current Windows release. It adds richer media metadata, filterable activity/history, safer torrent cancellation, and GitHub-backed app updates.
 
 Get the Windows installer or portable build from **[GitHub Releases](https://github.com/YazeKT/dlME/releases)**.
 
@@ -35,7 +35,7 @@ Get the Windows installer or portable build from **[GitHub Releases](https://git
 | **Setup x64** | Normal Windows installation and shortcuts | Windows application-data folder |
 | **Portable x64** | USB drives and self-contained use | `diME-data` beside the executable |
 
-dlME 1.0.0 is an unsigned stable release. Verify the downloaded file against `SHA256SUMS.txt`; Windows may display an unknown-publisher warning.
+dlME 1.1.0 is an unsigned stable release. Verify the downloaded file against `SHA256SUMS.txt`; Windows may display an unknown-publisher warning.
 
 ## Designed around the complete download workflow
 
@@ -47,6 +47,8 @@ dlME 1.0.0 is an unsigned stable release. Verify the downloaded file against `SH
 - **Verified media:** video defaults to MP4 and FFprobe checks the final container and playable streams.
 - **Truthful activity:** progress, speed, ETA, retries, and log messages come from the running job.
 - **Safe recovery:** Stop & keep partial preserves supported transfer data for a later retry.
+- **Richer media:** Creator-aware filenames, embedded metadata, cover artwork, chapters, and optional sidecars.
+- **Official updates:** Installed builds check the public GitHub Stable release channel and install only after user approval.
 - **Independent Files browser:** clearing history does not hide media that still exists on disk.
 - **Current extractor directory:** Supported reads the full list reported by the installed yt-dlp engine.
 - **Optional browser sessions:** browser access stays off until a user enables it for account-required media. If Chromium locks its cookie database, public media retries once without browser access.
@@ -101,7 +103,7 @@ Runtime downloads are release-pinned and SHA-256 verified. The renderer is sandb
 - 50 automated behavior tests
 - TypeScript strict mode
 - Clean Windows CI build from `npm ci`
-- Zero production npm audit findings in local 1.0.0 verification
+- Zero production npm audit findings in local 1.1.0 verification
 - Canonical-path checks for file open and reveal actions
 - FFprobe validation before successful media completion
 - Pinned runtime origins, versions, and hashes

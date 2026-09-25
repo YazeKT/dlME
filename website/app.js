@@ -1,9 +1,9 @@
 const siteData = {
-  version: '1.0.0',
-  sourceVersion: '1.0.0',
+  version: '1.1.0',
+  sourceVersion: '1.1.0',
   engineVersion: '2026.08.19',
   extractorEntries: 1752,
-  testCount: 50,
+  testCount: 52,
   auditFindings: 0,
   runtimeCount: 5,
   releaseAssetCount: 10,

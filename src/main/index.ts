@@ -7,6 +7,7 @@ import { registerIpc } from './ipc'
 import { EngineUpdater } from './updater'
 import { ensureDownloadFolders } from './library'
 import { TorrentEngine } from './torrents'
+import { AppUpdater } from './app-updater'
 
 let mainWindow: BrowserWindow | null = null
 let tray: Tray | null = null
@@ -65,11 +66,12 @@ async function createWindow(): Promise<void> {
   const notifyLog = (entry: unknown): void => { if (!mainWindow?.isDestroyed()) mainWindow?.webContents.send('dime:log', entry) }
   const engine = new DownloadEngine(db, notifyJob, notifyLog)
   const updater = new EngineUpdater(db, () => engine.version(), (message) => mainWindow?.webContents.send('dime:engine-update', message))
+  const appUpdater = new AppUpdater((state) => mainWindow?.webContents.send('dime:app-update', state))
   mediaEngine = engine
   const torrents = new TorrentEngine(db, notifyJob, (input) => { if (!mainWindow?.isDestroyed()) mainWindow?.webContents.send('dime:torrent-input', input) }, notifyLog, () => engine.wake())
   torrentEngine = torrents
   engine.externalActiveCount = () => torrents.activeCount()
-  registerIpc(mainWindow, db, engine, updater, torrents)
+  registerIpc(mainWindow, db, engine, updater, appUpdater, torrents)
   for (const source of externalInputs.splice(0)) await torrents.addInput(source).catch((error) => writeCrashLog(`External torrent rejected: ${error.message}`))
   app.setLoginItemSettings({ openAtLogin: db.getSettings().launchAtStartup })
 
@@ -90,6 +92,7 @@ async function createWindow(): Promise<void> {
     if (db.getSettings().engineAutoCheck) void updater.check().then((info) => {
       mainWindow?.webContents.send('dime:engine-update', info.updateAvailable ? `yt-dlp ${info.availableVersion} is available` : `yt-dlp ${info.currentVersion} is current`)
     }).catch((error) => writeCrashLog(`Engine update check failed: ${error instanceof Error ? error.message : String(error)}`))
+    if (db.getSettings().appAutoCheck) void appUpdater.check().catch((error) => writeCrashLog(`App update check failed: ${error instanceof Error ? error.message : String(error)}`))
   })
   if (process.env.ELECTRON_RENDERER_URL) await mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL)
   else await mainWindow.loadFile(join(__dirname, '../renderer/index.html'))

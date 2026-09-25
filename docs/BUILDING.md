@@ -25,7 +25,7 @@ npm run dev
 npm run package:win
 ```
 
-Artifacts are written to the versioned directory under `release` (currently `release/1.0.0`). Run `npm run release:check` before upload.
+Artifacts are written to the versioned directory under `release` (currently `release/1.1.0`). Run `npm run release:check` before upload. GitHub app updates also require the generated `latest.yml` and installer `.blockmap` beside the NSIS installer.
 
 ## Corresponding source
 

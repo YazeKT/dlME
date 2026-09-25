@@ -8,13 +8,13 @@
 4. Choose video or audio and a format.
 5. Select the items you want and start the download.
 
-Video defaults to MP4. dlME may merge or convert streams with FFmpeg, then checks the result with FFprobe before marking it complete.
+Video defaults to 1080p MP4. dlME may merge or convert streams with FFmpeg, then checks the result with FFprobe before marking it complete. When the source provides the data, dlME embeds the title, creator, album/date, chapters, and artwork. Settings control sidecar artwork/details and retention of original conversion streams.
 
 ## Live activity
 
-The activity area shows information reported by yt-dlp and dlME. Progress, speed, ETA, retries, and log lines are live values. A remote server can stop responding or change its behavior at any time.
+The activity area shows information reported by yt-dlp and dlME. Search and phase filters narrow current downloading, converting, paused, and attention states. Progress, speed, ETA, retries, and log lines are live values. Completed items remain in History, where type and status filters are available.
 
-**Pause** stops the transfer and preserves supported partial files. **Cancel** removes it from the queue and follows the retention preference. **Reset form** clears the current inputs; it does not delete completed downloads.
+**Pause** stops the transfer and preserves supported partial files. **Cancel** removes it from the queue. Torrent payload and resume files are always retained to prevent data loss; dlME never changes Windows Security settings. Clearing inputs or History does not delete completed downloads.
 
 ## Browser sessions
 

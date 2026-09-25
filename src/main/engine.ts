@@ -12,6 +12,7 @@ import { parseProgress, LineBuffer } from './progress'
 import { stopProcessTree } from './process-control'
 import { categories } from './library'
 import { parseExtractors } from './sites'
+import { buildMetadataArguments, buildOutputTemplate } from './media-output'
 
 const execFileAsync = promisify(execFile)
 interface CommandSpec { command: string; prefix: string[]; cwd?: string }
@@ -73,7 +74,7 @@ export class DownloadEngine {
   enqueue(request: EnqueueRequest): JobRecord[] {
     const selected = request.analysis.isPlaylist
       ? request.analysis.entries.filter((entry) => request.selectedEntryIds.includes(entry.id))
-      : [{ id: request.analysis.id, url: request.analysis.url, title: request.analysis.title, thumbnail: request.analysis.thumbnail, selected: true }]
+      : [{ id: request.analysis.id, url: request.analysis.url, title: request.analysis.title, thumbnail: request.analysis.thumbnail, duration: request.analysis.duration, uploader: request.analysis.uploader, artist: request.analysis.artist, album: request.analysis.album, releaseDate: request.analysis.releaseDate, selected: true }]
     if (!selected.length) throw new Error('Select at least one item to download.')
     if (!request.options || typeof request.options.outputDirectory !== 'string' || !request.options.outputDirectory.trim()) throw new Error('Choose a download folder.')
     if (!['audio', 'video'].includes(request.options.kind)) throw new Error('Choose video or audio output.')
@@ -86,7 +87,9 @@ export class DownloadEngine {
     const parentId = request.analysis.isPlaylist ? randomUUID() : undefined
     const jobs = selected.map((entry) => this.db.createJob({
       id: randomUUID(), parentId, sourceUrl: entry.url || request.analysis.url, title: entry.title || 'Untitled media',
-      thumbnail: entry.thumbnail, state: 'queued', options: { ...request.options, sourceHasAudio: request.analysis.isPlaylist ? undefined : request.analysis.formats.some((format) => format.audioCodec && format.audioCodec !== 'none') ? true : request.analysis.formats.length && request.analysis.formats.every((format) => format.audioCodec === 'none') ? false : undefined, exactFormatKind: request.options.exactFormatId ? request.analysis.formats.find((format) => format.id === request.options.exactFormatId)?.videoCodec === 'none' ? 'audio' : request.analysis.formats.find((format) => format.id === request.options.exactFormatId)?.audioCodec === 'none' ? 'video' : 'combined' : undefined, outputDirectory }
+      thumbnail: entry.thumbnail, creator: entry.artist || entry.uploader || request.analysis.artist || request.analysis.uploader,
+      album: entry.album || request.analysis.album, duration: entry.duration || request.analysis.duration, extractor: request.analysis.extractor,
+      state: 'queued', options: { ...request.options, sourceHasAudio: request.analysis.isPlaylist ? undefined : request.analysis.formats.some((format) => format.audioCodec && format.audioCodec !== 'none') ? true : request.analysis.formats.length && request.analysis.formats.every((format) => format.audioCodec === 'none') ? false : undefined, exactFormatKind: request.options.exactFormatId ? request.analysis.formats.find((format) => format.id === request.options.exactFormatId)?.videoCodec === 'none' ? 'audio' : request.analysis.formats.find((format) => format.id === request.options.exactFormatId)?.audioCodec === 'none' ? 'video' : 'combined' : undefined, outputDirectory }
     }))
     jobs.forEach(this.notify)
     jobs.forEach((job) => this.log(job.id, 'info', `Queued ${job.title}`))
@@ -149,7 +152,8 @@ export class DownloadEngine {
   private async startJob(job: JobRecord): Promise<void> {
     const spec = this.commandSpec()
     const settings = this.db.getSettings()
-    const outputTemplate = join(job.options.outputDirectory, settings.filenameStyle === 'title-only' ? '%(title).180B.%(ext)s' : '%(title).180B [%(id)s].%(ext)s')
+    const outputTemplate = buildOutputTemplate(job.options.outputDirectory, job.options.kind, settings.filenameStyle)
+    const metadataArgs = buildMetadataArguments(settings)
     const args = [
       ...spec.prefix, '--ignore-config', '--newline', '--progress', '--progress-delta', '0.25',
       ...(this.db.getSettings().keepPartialFiles ? ['--continue', '--part'] : ['--no-continue', '--no-part']), '--no-overwrites',
@@ -161,7 +165,7 @@ export class DownloadEngine {
       '--progress-template', 'download:__DIME_PROGRESS__|%(progress.status)s|%(progress.downloaded_bytes)s|%(progress.total_bytes,progress.total_bytes_estimate)s|%(progress.speed)s|%(progress.eta)s|%(progress._percent_str)s|%(info.format_id)s|%(info.vcodec)s|%(info.acodec)s',
       '--progress-template', 'postprocess:__DIME_PROCESS__%(progress.status)s',
       '--print', 'after_move:__DIME_FILE__%(filepath)s', '--ffmpeg-location', this.ffmpegDirectory(),
-      ...this.runtimeArgs(), ...(this.cookieFallbackJobs.has(job.id) ? [] : browserArgs(job.options.browser)), ...buildFormatArguments(job.options), job.sourceUrl
+      ...metadataArgs, ...this.runtimeArgs(), ...(this.cookieFallbackJobs.has(job.id) ? [] : browserArgs(job.options.browser)), ...buildFormatArguments(job.options), job.sourceUrl
     ]
     const child = spawn(spec.command, args, { cwd: spec.cwd, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] })
     this.running.set(job.id, child)
@@ -343,7 +347,8 @@ function normalizeAnalysis(url: string, raw: Record<string, unknown>): MediaAnal
   const isPlaylist = entriesRaw.length > 0 || raw._type === 'playlist'
   const entries: MediaEntry[] = entriesRaw.map((entry, index) => ({
     id: String(entry.id ?? index), url: String(entry.webpage_url ?? entry.url ?? url), title: String(entry.title ?? `Item ${index + 1}`),
-    thumbnail: getThumbnail(entry), duration: numberOrUndefined(entry.duration), uploader: stringOrUndefined(entry.uploader), selected: true
+    thumbnail: getThumbnail(entry), duration: numberOrUndefined(entry.duration), uploader: stringOrUndefined(entry.uploader ?? entry.channel),
+    artist: stringOrUndefined(entry.artist ?? entry.creator), album: stringOrUndefined(entry.album), releaseDate: stringOrUndefined(entry.release_date ?? entry.upload_date), selected: true
   }))
   const formatsRaw = Array.isArray(raw.formats) ? raw.formats as Array<Record<string, unknown>> : []
   const formats: FormatInfo[] = formatsRaw.map((format) => ({
@@ -354,7 +359,8 @@ function normalizeAnalysis(url: string, raw: Record<string, unknown>): MediaAnal
   })).filter((format) => format.id && !['mhtml', 'jpg', 'png'].includes(format.extension))
   return {
     url, id: String(raw.id ?? 'media'), title: String(raw.title ?? 'Untitled media'), thumbnail: getThumbnail(raw),
-    duration: numberOrUndefined(raw.duration), uploader: stringOrUndefined(raw.uploader ?? raw.channel), isLive: Boolean(raw.is_live), isPlaylist,
+    duration: numberOrUndefined(raw.duration), uploader: stringOrUndefined(raw.uploader ?? raw.channel), artist: stringOrUndefined(raw.artist ?? raw.creator),
+    album: stringOrUndefined(raw.album), releaseDate: stringOrUndefined(raw.release_date ?? raw.upload_date), isLive: Boolean(raw.is_live), isPlaylist,
     entries, formats, extractor: stringOrUndefined(raw.extractor_key ?? raw.extractor)
   }
 }

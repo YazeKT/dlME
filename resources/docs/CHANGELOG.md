@@ -9,6 +9,20 @@ All notable public changes to dlME are recorded here. The project uses semantic 
 - Broader torrent protocol compatibility and continued website testing.
 - Signed Windows releases when a code-signing certificate is available.
 
+## [1.1.0] - 2026-09-25
+
+### Added
+
+- Added search and phase filters to the current-download view and type/status filters to History.
+- Added creator-aware filenames, embedded metadata, cover artwork, chapters, cleaned JSON sidecars, and source artwork sidecars.
+- Added installed-app update checks, downloads, and restart-to-install through official public GitHub releases.
+
+### Fixed
+
+- Current downloading and converting work now leads Downloader; completed items stay in History.
+- Torrent cancellation now preserves payload and resume files regardless of media partial-cleanup settings.
+- Product-site and in-app media images preserve their source aspect ratio.
+
 ## [1.0.0] - 2026-09-18
 
 ### Added — desktop torrent downloading

@@ -1,7 +1,7 @@
 import { app, Notification, shell } from 'electron'
 import { spawn, type ChildProcess } from 'node:child_process'
 import { randomBytes, randomUUID } from 'node:crypto'
-import { copyFileSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, statSync, unlinkSync } from 'node:fs'
+import { copyFileSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path'
 import { createServer } from 'node:net'
 import type { DimeLogEntry, JobRecord, TorrentInput } from '../shared/types'
@@ -127,17 +127,8 @@ export class TorrentEngine {
         this.jobs.delete(id)
       }
       const latest = this.db.getJob(id)!
-      if (cancel && !this.db.getSettings().keepPartialFiles) {
-        for (const file of latest.options.torrent!.files) {
-          this.assertSafePath(latest.options.outputDirectory, file.path)
-          const path = join(latest.options.outputDirectory, file.path)
-          if (existsSync(path) && lstatSync(path).isFile()) unlinkSync(path)
-        }
-        const first = latest.options.torrent!.files[0]?.path.split('/')[0]
-        if (first) { const control = join(latest.options.outputDirectory, `${first}.aria2`); if (existsSync(control) && lstatSync(control).isFile() && !lstatSync(control).isSymbolicLink()) unlinkSync(control) }
-      }
       this.notify(this.db.updateJob(id, { state: cancel ? 'cancelled' : 'paused', progress: { ...latest.progress, phase: cancel ? 'Cancelled' : 'Paused' } }))
-      this.log(id, 'warning', cancel ? this.db.getSettings().keepPartialFiles ? 'Torrent cancelled. Downloaded data was kept.' : 'Torrent cancelled. Partial files were removed according to your preference.' : 'Torrent paused; downloaded pieces were preserved.')
+      this.log(id, 'warning', cancel ? 'Torrent cancelled. Downloaded and partial payload files were kept to prevent data loss.' : 'Torrent paused; downloaded pieces were preserved.')
     } finally { this.stopping.delete(id); this.wakeMedia() }
   }
   resume(id: string): void {

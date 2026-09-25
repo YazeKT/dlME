@@ -59,6 +59,10 @@ export class DimeDatabase {
       );
       CREATE TABLE IF NOT EXISTS download_roots (path TEXT PRIMARY KEY);
     `)
+    const jobColumns = new Set((this.db.pragma('table_info(jobs)') as Array<{ name: string }>).map((column) => column.name))
+    for (const [name, type] of [['creator', 'TEXT'], ['album', 'TEXT'], ['duration', 'REAL'], ['extractor', 'TEXT']] as const) {
+      if (!jobColumns.has(name)) this.db.exec(`ALTER TABLE jobs ADD COLUMN ${name} ${type}`)
+    }
     for (const job of this.listJobs()) this.rememberDownloadRoot(job.options.outputDirectory)
     if (!this.db.prepare("SELECT value FROM settings WHERE key = 'beta09Migrated'").get()) {
       this.db.prepare("UPDATE settings SET value = ? WHERE key = 'defaultVideoContainer' AND value = ?").run('"mp4"', '"auto"')
@@ -97,6 +101,12 @@ export class DimeDatabase {
       completionSound: true,
       engineAutoCheck: true,
       filenameStyle: 'title-id',
+      embedMetadata: true,
+      embedThumbnail: true,
+      saveMetadataSidecar: true,
+      saveThumbnailSidecar: true,
+      keepOriginalMedia: true,
+      appAutoCheck: true,
       tutorialCompleted: false
     }
     const rows = this.db.prepare('SELECT key, value FROM settings').all() as Array<{ key: string; value: string }>
@@ -114,7 +124,7 @@ export class DimeDatabase {
   }
 
   updateSettings(patch: Partial<AppSettings>): AppSettings {
-    const allowed = new Set<keyof AppSettings>(['outputDirectory', 'maxConcurrent', 'theme', 'accentColor', 'launchAtStartup', 'keepPartialFiles', 'browserAccess', 'defaultQuality', 'defaultVideoContainer', 'defaultAudioContainer', 'retryLimit', 'connectionTimeout', 'concurrentFragments', 'playlistPacing', 'completionNotifications', 'completionSound', 'engineAutoCheck', 'filenameStyle', 'tutorialCompleted'])
+    const allowed = new Set<keyof AppSettings>(['outputDirectory', 'maxConcurrent', 'theme', 'accentColor', 'launchAtStartup', 'keepPartialFiles', 'browserAccess', 'defaultQuality', 'defaultVideoContainer', 'defaultAudioContainer', 'retryLimit', 'connectionTimeout', 'concurrentFragments', 'playlistPacing', 'completionNotifications', 'completionSound', 'engineAutoCheck', 'filenameStyle', 'embedMetadata', 'embedThumbnail', 'saveMetadataSidecar', 'saveThumbnailSidecar', 'keepOriginalMedia', 'appAutoCheck', 'tutorialCompleted'])
     const write = this.db.prepare('INSERT INTO settings(key, value) VALUES(?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value')
     const transaction = this.db.transaction(() => {
       for (const [key, value] of Object.entries(patch)) if (allowed.has(key as keyof AppSettings) && value !== undefined) write.run(key, JSON.stringify(value))
@@ -127,8 +137,8 @@ export class DimeDatabase {
   createJob(input: Omit<JobRecord, 'createdAt' | 'updatedAt' | 'attempts' | 'progress'> & { progress?: JobProgress }): JobRecord {
     const now = new Date().toISOString()
     const job: JobRecord = { ...input, progress: input.progress ?? defaultProgress, attempts: 0, createdAt: now, updatedAt: now }
-    this.db.prepare(`INSERT INTO jobs(id,parent_id,source_url,title,thumbnail,state,progress_json,options_json,output_path,size,error_code,error_message,attempts,created_at,updated_at)
-      VALUES(@id,@parentId,@sourceUrl,@title,@thumbnail,@state,@progress,@options,@outputPath,@size,@errorCode,@errorMessage,@attempts,@createdAt,@updatedAt)`)
+    this.db.prepare(`INSERT INTO jobs(id,parent_id,source_url,title,thumbnail,creator,album,duration,extractor,state,progress_json,options_json,output_path,size,error_code,error_message,attempts,created_at,updated_at)
+      VALUES(@id,@parentId,@sourceUrl,@title,@thumbnail,@creator,@album,@duration,@extractor,@state,@progress,@options,@outputPath,@size,@errorCode,@errorMessage,@attempts,@createdAt,@updatedAt)`)
       .run(this.toRow(job))
     return job
   }
@@ -137,7 +147,7 @@ export class DimeDatabase {
     const existing = this.getJob(id)
     if (!existing) throw new Error(`Unknown download job: ${id}`)
     const next: JobRecord = { ...existing, ...patch, updatedAt: new Date().toISOString() }
-    this.db.prepare(`UPDATE jobs SET parent_id=@parentId,source_url=@sourceUrl,title=@title,thumbnail=@thumbnail,state=@state,
+    this.db.prepare(`UPDATE jobs SET parent_id=@parentId,source_url=@sourceUrl,title=@title,thumbnail=@thumbnail,creator=@creator,album=@album,duration=@duration,extractor=@extractor,state=@state,
       progress_json=@progress,options_json=@options,output_path=@outputPath,size=@size,error_code=@errorCode,error_message=@errorMessage,
       attempts=@attempts,updated_at=@updatedAt WHERE id=@id`).run(this.toRow(next))
     return next
@@ -207,6 +217,7 @@ export class DimeDatabase {
   private toRow(job: JobRecord): Record<string, unknown> {
     return {
       id: job.id, parentId: job.parentId ?? null, sourceUrl: job.sourceUrl, title: job.title, thumbnail: job.thumbnail ?? null,
+      creator: job.creator ?? null, album: job.album ?? null, duration: job.duration ?? null, extractor: job.extractor ?? null,
       state: job.state, progress: JSON.stringify(job.progress), options: JSON.stringify(job.options), outputPath: job.outputPath ?? null,
       size: job.size ?? null, errorCode: job.errorCode ?? null, errorMessage: job.errorMessage ?? null, attempts: job.attempts,
       createdAt: job.createdAt, updatedAt: job.updatedAt
@@ -216,7 +227,9 @@ export class DimeDatabase {
   private fromRow(row: Record<string, unknown>): JobRecord {
     return {
       id: String(row.id), parentId: row.parent_id ? String(row.parent_id) : undefined, sourceUrl: String(row.source_url), title: String(row.title),
-      thumbnail: row.thumbnail ? String(row.thumbnail) : undefined, state: String(row.state) as JobState,
+      thumbnail: row.thumbnail ? String(row.thumbnail) : undefined, creator: row.creator ? String(row.creator) : undefined,
+      album: row.album ? String(row.album) : undefined, duration: row.duration == null ? undefined : Number(row.duration), extractor: row.extractor ? String(row.extractor) : undefined,
+      state: String(row.state) as JobState,
       progress: JSON.parse(String(row.progress_json)) as JobProgress, options: JSON.parse(String(row.options_json)) as DownloadOptions,
       outputPath: row.output_path ? String(row.output_path) : undefined, size: row.size == null ? undefined : Number(row.size),
       errorCode: row.error_code ? String(row.error_code) : undefined, errorMessage: row.error_message ? String(row.error_message) : undefined,

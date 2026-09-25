@@ -13,9 +13,9 @@
     <link rel="canonical" href="https://yazekt.github.io/dlME/" />
     <title>dlME — Windows media and torrent downloader</title>
     <link rel="icon" href="assets/dlme-logo.png" />
-    <link rel="stylesheet" href="styles.css?v=4" />
-    <script src="site-data.js?v=4"></script>
-    <script src="app.js?v=4" defer></script>
+    <link rel="stylesheet" href="styles.css?v=5" />
+    <script src="site-data.js?v=5"></script>
+    <script src="app.js?v=5" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -32,7 +32,7 @@
       <section class="hero" id="top">
         <div class="hero-glow" aria-hidden="true"></div>
         <div class="hero-copy" data-reveal>
-          <div class="release-line"><span class="live-dot" aria-hidden="true"></span><span>Stable <b data-version>1.0.0</b></span><span class="release-divider" aria-hidden="true"></span><span>Windows 10 &amp; 11 · x64</span></div>
+          <div class="release-line"><span class="live-dot" aria-hidden="true"></span><span>Stable <b data-version>1.1.0</b></span><span class="release-divider" aria-hidden="true"></span><span>Windows 10 &amp; 11 · x64</span></div>
           <h1>From link to<br /><span>verified local file.</span></h1>
           <p class="hero-lede">Download from media URLs, browser magnet links, and torrent files. Choose what to keep, follow real progress, stop the actual transfer, and verify the finished output.</p>
           <div class="hero-actions">
@@ -128,9 +128,9 @@
 
       <section class="build section" id="build">
         <div class="section-kicker" data-reveal><span>OPEN ABOUT THE BUILD</span><i></i></div>
-        <div class="build-heading" data-reveal><div><h2>Proof belongs in the open.</h2><p>Source snapshot <strong data-source-version>1.0.0</strong> is tested before this site deploys. Published-release facts come separately from GitHub, so the page stays honest while the next app update is in progress.</p></div><div class="ci-badge"><i></i><span><small>SOURCE DEPLOY GATE</small><strong>Passing</strong></span></div></div>
+        <div class="build-heading" data-reveal><div><h2>Proof belongs in the open.</h2><p>Source snapshot <strong data-source-version>1.1.0</strong> is tested before this site deploys. Published-release facts come separately from GitHub, so the page stays honest while the next app update is in progress.</p></div><div class="ci-badge"><i></i><span><small>SOURCE DEPLOY GATE</small><strong>Passing</strong></span></div></div>
         <dl class="stat-grid"><div data-reveal><dt><span data-count="1752">1,752</span></dt><dd>source-engine extractor entries</dd></div><div data-reveal><dt><span data-test-count>32</span> / <span data-test-count>32</span></dt><dd>source behavior tests passing</dd></div><div data-reveal><dt><span data-audit-count>0</span></dt><dd>source npm audit findings</dd></div><div data-reveal><dt><span data-count="2">2</span></dt><dd>published Windows x64 builds</dd></div><div data-reveal><dt><span data-runtime-count>4</span></dt><dd>source checksummed runtimes</dd></div><div data-reveal><dt><span data-count="6">6</span></dt><dd>organized file categories</dd></div><div data-reveal><dt>SHA-256</dt><dd>published release verification</dd></div><div data-reveal><dt><span data-asset-count>10</span></dt><dd>published release assets</dd></div></dl>
-        <div class="build-disclosure" data-reveal><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 21h20L12 3Zm0 6v5m0 3v.1" /></svg><p><strong>1.0.0 Stable is available for Windows.</strong> The current Windows executables are unsigned, so Windows may show an unknown-publisher warning. Download only from the official GitHub release and verify <code>SHA256SUMS.txt</code>.</p><a href="https://github.com/YazeKT/dlME#project-quality">Review the evidence <span aria-hidden="true">↗</span></a></div>
+        <div class="build-disclosure" data-reveal><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 21h20L12 3Zm0 6v5m0 3v.1" /></svg><p><strong>1.1.0 Stable is available for Windows.</strong> The current Windows executables are unsigned, so Windows may show an unknown-publisher warning. Download only from the official GitHub release and verify <code>SHA256SUMS.txt</code>.</p><a href="https://github.com/YazeKT/dlME#project-quality">Review the evidence <span aria-hidden="true">↗</span></a></div>
       </section>
 
       <section class="privacy section-edge">
@@ -143,7 +143,7 @@
         <div class="questions-grid"><h2 data-reveal>Direct answers,<br />before the click.</h2><div class="faq-list" data-reveal>
           <details><summary>Does every listed website always work?<span aria-hidden="true">+</span></summary><p>No. The directory shows extractor code available in the installed engine. Websites, login rules, regional limits, removed media, rate limits, and anti-bot systems can change independently.</p></details>
           <details><summary>Does dlME bypass DRM or paywalls?<span aria-hidden="true">+</span></summary><p>No. dlME does not bypass DRM, paywalls, access controls, or site challenges. Download only media you own or have permission to save.</p></details>
-          <details><summary>Can dlME download any kind of torrent file?<span aria-hidden="true">+</span></summary><p>Yes. dlME does not restrict payload categories: games, applications, archives, disk images, documents, and media are supported. It never automatically runs or opens downloaded applications. Version 1.0.0 supports BitTorrent v1 and hybrid metadata; pure v2 metadata is not yet supported.</p></details>
+          <details><summary>Can dlME download any kind of torrent file?<span aria-hidden="true">+</span></summary><p>dlME does not restrict payload categories: games, applications, archives, disk images, documents, and media are supported. It never automatically runs or opens downloaded applications and never changes Windows Security settings. Version 1.1.0 supports BitTorrent v1 and hybrid metadata; pure v2 metadata is not yet supported.</p></details>
           <details><summary>Does torrent downloading upload data?<span aria-hidden="true">+</span></summary><p>It can upload pieces to peers while your requested files are downloading. dlME stops the transfer at completion instead of continuing to seed.</p></details>
           <details><summary>Where does my data go?<span aria-hidden="true">+</span></summary><p>Your settings, history, logs, and file records remain on your computer. Browser-session access is optional and off by default.</p></details>
           <details><summary>Why does Windows show a warning?<span aria-hidden="true">+</span></summary><p>The Stable executables are currently unsigned. Verify the included SHA-256 sums and download only from the official GitHub release.</p></details>
@@ -152,7 +152,7 @@
       </section>
 
       <section class="final-cta">
-        <div data-reveal><div class="final-brand"><img src="assets/dlme-logo.png" alt="" width="52" height="52" /><span>dlME</span></div><h2>Download clearly.<br /><span>Keep locally.</span></h2><p>Windows 10 &amp; 11 · x64 · Stable <b data-version>1.0.0</b></p></div>
+        <div data-reveal><div class="final-brand"><img src="assets/dlme-logo.png" alt="" width="52" height="52" /><span>dlME</span></div><h2>Download clearly.<br /><span>Keep locally.</span></h2><p>Windows 10 &amp; 11 · x64 · Stable <b data-version>1.1.0</b></p></div>
         <div class="final-actions" data-reveal><a class="button button-primary" data-release-link href="https://github.com/YazeKT/dlME/releases">View public releases <span data-version>1.0.0</span> <span aria-hidden="true">↗</span></a><a href="https://github.com/YazeKT/dlME">View the source on GitHub <span aria-hidden="true">↗</span></a><small>Unsigned Stable · MIT application source · third-party components keep their own licenses</small></div>
       </section>
     </main>
