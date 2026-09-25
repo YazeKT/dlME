@@ -40,13 +40,13 @@
     "electron-updater": "6.8.9",
     "openpgp": "6.3.1",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.3.0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "7.6.13",
     "@types/node": "24.10.1",
     "@types/react": "19.2.2",
-    "@types/react-dom": "19.2.2",
+    "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "5.2.0",
     "electron": "44.1.0",
     "electron-builder": "26.15.3",
