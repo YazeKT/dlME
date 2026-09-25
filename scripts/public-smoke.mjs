@@ -17,7 +17,7 @@ try {
   await page.reload(); await page.getByRole('heading', { name: 'Download media', exact: true }).waitFor()
   await page.getByRole('button', { name: 'About', exact: true }).click()
   await page.getByRole('button', { name: 'Check app', exact: true }).click()
-  await page.getByText('dlME is up to date.', { exact: true }).waitFor({ timeout: 60000 })
+  await page.getByText('dlME is up to date.', { exact: true }).first().waitFor({ timeout: 60000 })
   await page.getByRole('button', { name: 'Downloader', exact: true }).click()
   await page.getByRole('textbox', { name: 'Media URL' }).fill('https://raw.githubusercontent.com/mediaelement/mediaelement-files/master/big_buck_bunny.mp4')
   await page.getByRole('button', { name: 'Analyze URL', exact: true }).click()
