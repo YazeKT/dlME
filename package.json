@@ -38,7 +38,7 @@
     "@phosphor-icons/react": "2.1.10",
     "better-sqlite3": "13.0.3",
     "electron-updater": "6.8.9",
-    "openpgp": "6.3.1",
+    "openpgp": "6.3.2",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
