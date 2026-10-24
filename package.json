@@ -48,7 +48,7 @@
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
     "@vitejs/plugin-react": "5.2.0",
-    "electron": "44.1.0",
+    "electron": "44.9.1",
     "electron-builder": "26.15.3",
     "electron-vite": "5.0.0",
     "png-to-ico": "3.0.2",
